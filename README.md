@@ -1,29 +1,67 @@
-# Create T3 App
+# Report Card Helper
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+This web app creates a frontend for the Younghoon Elementary School report card PDF to remove some of the manual input that is required if using the PDF.
 
-## What's next? How do I make an app with this?
+## To-do List
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+### dreams
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+- added: can compare current student to descriptive stats of whole class
+- added: can compare current student to descriptive stats of whole grade
+- added: dashboard for the whole grade
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Drizzle](https://orm.drizzle.team)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+### p3
 
-## Learn More
+- find a better spot for the files in public
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+### p2
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+- added: created a map to the PDF (must skip the first 2 pages)
+- emulate the following sections
+  - Cover Page
+    - Student Name
+    - Student Number
+    - Teacher's Name
+    - Date
+  - 21st Century Skills, Learner Traits and Work Habits (S1 and S2)
+    _CD = Consistently Demonstrates: The student applies the skill, trait, or work habit consistently with minimal teacher support._
+    _P = Progressing: The student applies the skill, trait, or work habit regularly, though, needs additional teacher support at times._
+    _NY = Not Yet: The student has not yet applied the skill, trait, or work habit appropriately or does so with much teacher support. Additional practice is required._
+    - Responsibility
+    - Organization
+    - Collaboration
+    - Communication
+    - Thinking (Creative and Problem Solving)
+    - Inquiry
+    - Risk-Taking
+    - Open-Minded
+- First Comment (text area)
+- Subjects (S1 and S2 and Strengths/Next Steps for Improvement)
+  - Reading
+  - Writing
+  - Speaking
+  - Listening
+  - Use of English
+  - Mathematics
+  - Social Studies
+  - Science
+- Final Comment (text area)
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+### p1
 
-## How do I deploy this?
+- added: created a comment template for the grades to fill out
+- added: created a parser for the comment files
+-
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+### p0
+
+- added: user can log in with Google
+- added: user can import a class from Google Classroom
+- added: initialized Drizzle or Prisma
+
+## Change-log
+
+2024/06/13
+
+- added: created the above priority to-do list
+- added: files to work with are in public (need to perhaps use [uploadthing](https://uploadthing.com/)?)
