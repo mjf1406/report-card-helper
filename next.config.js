@@ -5,10 +5,6 @@
 await import("./src/env.js");
 
 /** @type {import("next").NextConfig} */
-const config = {
-  basePath: "/report-card-helper",
-  output: "export",
-  reactStrictMode: true,
-};
+const config = {};
 
 export default config;
