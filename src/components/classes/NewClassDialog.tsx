@@ -31,11 +31,15 @@ import {
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import ImportGoogleClassesDialog from "./ImportGoogleClassesDialog";
+import { useAuth } from "@clerk/nextjs";
+import insertClass from "~/server/actions/insertClass";
 import { useState } from "react";
+import type { Data } from "~/server/actions/insertClass";
 import { useToast } from "~/components/ui/use-toast";
 import EventBus from "~/lib/EventBus";
 
 export default function NewClassDialog() {
+  const { userId } = useAuth();
   const [className, setClassName] = useState("");
   const [classLanguage, setClassLanguage] = useState("en"); // Default to English
   const [teacherRole, setTeacherRole] = useState("primary"); // Default to primary
