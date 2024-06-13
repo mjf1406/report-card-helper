@@ -9,6 +9,8 @@ This web app creates a frontend for the Younghoon Elementary School report card 
 - added: can compare current student to descriptive stats of whole class
 - added: can compare current student to descriptive stats of whole grade
 - added: dashboard for the whole grade
+  - detects outlies and brings them to the user's attention
+  - fancy bar graphs
 
 ### p3
 
