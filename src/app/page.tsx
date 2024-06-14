@@ -63,7 +63,7 @@ const twentyFirstCentrySkillsOptions = {
 
 const subjectAchievementOptions = [1, 2, 3, 4, 5]; // This value fetches the Strengths/Next Steps for Improvement
 
-export async function printPDF() {
+async function printPDF() {
   const formUrl =
     "https://utfs.io/f/5234b4e8-92e5-4934-bc32-2fe376e43760-1javl8.pdf";
   const formPdfBytes = await fetch(formUrl).then((res) => res.arrayBuffer());
