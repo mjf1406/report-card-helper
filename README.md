@@ -11,6 +11,10 @@ This web app creates a frontend for the Younghoon Elementary School report card 
 - added: dashboard for the whole grade
   - detects outlies and brings them to the user's attention
   - fancy bar graphs
+- added: RAZ Kids Kids A-Z Classroom Activity email parser to track RAZ Kids data
+  - detects students how might be reading books too quickly automatically
+  - detects if they are earning too many stars too quickly automatically
+  - etc.
 
 ### p3
 
