@@ -42,7 +42,7 @@ async function fetchClassroomData(): Promise<Course[]> {
   try {
     const response = await fetch("/api/getClasses");
     if (!response.ok) {
-      throw new Error("Failed to fetch ClassQuest classes data");
+      throw new Error("Failed to fetch Reparper classes data");
     }
     const text = await response.text(); // Make this operation await so it completes here
     const data = JSON.parse(text); // Parse the text to JSON

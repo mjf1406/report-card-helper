@@ -29,7 +29,7 @@ export default function ImportGoogleClassesDialog() {
           <DialogHeader>
             <DialogTitle>Import classes from Google Classroom</DialogTitle>
             <DialogDescription>
-              Add any of the below classes to ClassQuest.
+              Add any of the below classes to Reparper.
             </DialogDescription>
           </DialogHeader>
           <div className="flex items-center space-x-2">

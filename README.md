@@ -57,17 +57,31 @@ This web app creates a frontend for the Younghoon Elementary School report card 
 
 - added: created a comment template for the grades to fill out
 - added: created a parser for the comment files
--
+- added: ingested all the data in the spreadsheet an inserted it into the db
 
 ### p0
 
 - added: user can log in with Google
 - added: user can import a class from Google Classroom
 - added: initialized Drizzle or Prisma
+- added: Google refresh token is now handled, prompting the user to reauthenticate
 
 ## Change-log
+
+2024/06/14
+
+- added: maps for the various imports
+- added: exported two PDFs for test printing
+- added: a very silly and ridiculous name
+- added: can log in with Google now and load classes from Google Classroom
 
 2024/06/13
 
 - added: created the above priority to-do list
 - added: files to work with are in public (need to perhaps use [uploadthing](https://uploadthing.com/)?)
+
+## Attributions
+
+- [uploadthing](https://uploadthing.com/) for storing the files securely
+- [pdfFiller](https://www.pdffiller.com/) for helping me to find the field names, without which, this might not have been possible
+-

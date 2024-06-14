@@ -1,3 +1,4 @@
+import { auth, clerkClient } from '@clerk/nextjs/server';
 import { google, type classroom_v1 } from 'googleapis';
 import { type NextRequest, NextResponse } from 'next/server';
 

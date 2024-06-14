@@ -1,5 +1,5 @@
 import "~/styles/globals.css";
-
+import { ClerkProvider, ClerkLoaded, ClerkLoading } from "@clerk/nextjs";
 import { poppins } from "./fonts";
 import { Toaster } from "~/components/ui/toaster";
 import { ThemeProvider } from "~/components/theme-provider";
@@ -16,18 +16,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${poppins.className}`}>
-      <body>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <main>{children}</main>
-          <Toaster />
-        </ThemeProvider>
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en" className={`${poppins.className}`}>
+        <body>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <main>{children}</main>
+            <Toaster />
+          </ThemeProvider>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
