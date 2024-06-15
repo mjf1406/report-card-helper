@@ -43,6 +43,7 @@ function databaseClassToCourseMap(data: object[]) {
     classData.class_language = data?.class[0]?.classes.class_language;
     classData.created_date = data?.class[0]?.classes.created_date;
     classData.updated_date = data?.class[0]?.classes.updated_date;
+    classData.class_grade = data?.class[0]?.classes.class_grade;
   
     const teachers = [];
     for (const teacher of data.class) {

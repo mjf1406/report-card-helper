@@ -123,28 +123,9 @@ const MobileNav: React.FC<MobileNavProps> = ({ page }) => {
           <NavigationMenu className=" z-20 m-auto flex w-full flex-col justify-start gap-10 p-3 text-2xl">
             <NavigationMenuList className="flex w-full flex-col justify-start text-2xl">
               <NavigationMenuItem>
-                <Link
-                  href="#features"
-                  legacyBehavior
-                  passHref
-                  className="text-3xl"
-                >
-                  <NavigationMenuLink className="justify-self-start">
-                    Features
-                  </NavigationMenuLink>
-                </Link>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <Link href="#pricing" legacyBehavior passHref>
-                  <NavigationMenuLink className="justify-self-start">
-                    Pricing
-                  </NavigationMenuLink>
-                </Link>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <Link href="#faq" legacyBehavior passHref>
-                  <NavigationMenuLink className="justify-self-start">
-                    FAQ
+                <Link href="/classes" legacyBehavior passHref>
+                  <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                    My classes
                   </NavigationMenuLink>
                 </Link>
               </NavigationMenuItem>

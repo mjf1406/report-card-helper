@@ -23,14 +23,17 @@ interface ClassData {
     class_id: string;
     class_name: string;
     class_language: string;
+    class_grade: string;
 }
 
 export interface Data {
     class_id: string;
     class_name: string;
     class_language: string;
+    class_grade: string;
     role: string;
     fileContents: string;
+
 }
 
 interface TeacherClassData {
@@ -79,6 +82,7 @@ export default async function insertClass(data: Data, userId: string) {
         class_id: classId,
         class_name: data.class_name,
         class_language: data.class_language,
+        class_grade: data.class_grade,
     }
     await db.insert(classesTable).values(classData)
 

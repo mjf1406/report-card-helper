@@ -1,11 +1,11 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Loader2, Settings, SquarePen, ScrollText } from "lucide-react";
-import { Button, buttonVariants } from "~/components/ui/button";
-import Logo from "~/components/brand/Logo";
+import { Loader2, Download, SquarePen, School } from "lucide-react";
+import { Button } from "~/components/ui/button";
 import EventBus from "~/lib/EventBus";
 import Link from "next/link";
+import { downloadReportCards } from "~/server/actions/downloadReportCards";
 
 interface Course {
   class_id: string;
@@ -28,6 +28,7 @@ export function databaseClassesToCourseMap(data: object[]) {
       class_id: element?.classes?.class_id,
       class_name: element?.classes?.class_name,
       class_language: element?.classes?.class_language,
+      class_grade: element?.classes?.class_grade,
       created_date: element?.classes?.created_date,
       updated_date: element?.classes?.updated_date,
       assigned_date: element?.teacher_classes?.assigned_date,
@@ -107,20 +108,29 @@ export default function ClassList() {
               <div className="text-base font-bold lg:text-xl">
                 {course.class_name}
               </div>
-              <div className="text-sm italic lg:text-sm">{course.role}</div>
+              <div className="text-sm italic lg:text-sm">
+                {course.role} teacher
+              </div>
+              <div className="text-sm italic">grade {course.class_grade}</div>
             </div>
             <div className="m-auto flex h-full flex-1 items-end justify-end gap-2 self-end">
+              {course.complete ? (
+                <Button onClick={downloadReportCards}>
+                  <Download className="mr-2 h-4 w-4" />
+                  Download Reports
+                </Button>
+              ) : (
+                <></>
+              )}
               <Button
                 asChild
                 variant={"outline"}
                 className="flex gap-2 bg-inherit"
               >
                 <Link href={`/classes/${course.class_id}`}>
+                  <School className="h-4 w-4" />
                   <span className="hidden md:block">Open</span>
                 </Link>
-              </Button>
-              <Button variant={"ghost"} className="px-2 py-1">
-                <Settings className="h-5 w-5"></Settings>
               </Button>
               <Button
                 asChild

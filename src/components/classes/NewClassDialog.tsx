@@ -18,6 +18,13 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "~/components/ui/tooltip";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "~/components/ui/select";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { useAuth } from "@clerk/nextjs";
@@ -31,6 +38,7 @@ import Link from "next/link";
 export default function NewClassDialog() {
   const { userId } = useAuth();
   const [className, setClassName] = useState("");
+  const [classGrade, setClassGrade] = useState("");
   const [classLanguage, setClassLanguage] = useState("en"); // Default to English
   const [teacherRole, setTeacherRole] = useState("primary"); // Default to primary
   const [open, setOpen] = useState(false);
@@ -57,6 +65,7 @@ export default function NewClassDialog() {
       const newClass: Data = {
         class_name: className,
         class_language: classLanguage,
+        class_grade: classGrade,
         role: teacherRole,
         fileContents: text, // Assuming the file is JSON or properly stringified
       };
@@ -184,6 +193,42 @@ export default function NewClassDialog() {
                 value={className}
                 onChange={(e) => setClassName(e.target.value)}
               />
+            </div>
+          </div>
+          <div className="flex flex-col items-start space-x-2">
+            <h2 className="text-2xl">Step 5</h2>
+            <div className="grid flex-1 gap-2">
+              <Label htmlFor="class-name" className="flex items-center">
+                Class grade{" "}
+                <span className="pl-2">
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Info width={16}></Info>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>
+                          Choose your grade so you can compare to the other
+                          classes therein.
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </span>
+              </Label>
+              <Select onValueChange={setClassGrade}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Class grade" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1">1</SelectItem>
+                  <SelectItem value="2">2</SelectItem>
+                  <SelectItem value="3">3</SelectItem>
+                  <SelectItem value="4">4</SelectItem>
+                  <SelectItem value="5">5</SelectItem>
+                  <SelectItem value="6">6</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
           <DialogFooter className="sm:justify-start">

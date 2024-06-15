@@ -59,33 +59,29 @@ const DesktopNav: React.FC<DesktopNavProps> = ({ page }) => {
           {page === "/" ? (
             <Link className="flex gap-2 font-semibold" href="#hero">
               <Logo fill="hsl(var(--primary))" size="30" />
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <span className="hidden text-2xl md:block">Reparper</span>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>
-                      <b className="text-primary dark:text-secondary">Rep</b>ort
-                      C<b className="text-primary dark:text-secondary">ar</b>d
-                      Hel
-                      <b className="text-primary dark:text-secondary">per</b>
-                    </p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+              <div className="hidden flex-row gap-1 text-2xl md:flex">
+                <div>Reparper</div>
+                <div className="text-top justify-start self-start text-xs">
+                  [BETA]
+                </div>
+              </div>
             </Link>
           ) : (
-            <Link className="flex gap-2 font-semibold" href="/">
+            <Link className="flex flex-row gap-2 font-semibold" href="/">
               <Logo fill="hsl(var(--primary))" size="30" />
-              <span className="hidden text-2xl md:block">Reparper</span>
+              <div className="hidden flex-row gap-1 text-2xl md:flex">
+                <div>Reparper</div>
+                <div className="text-top justify-start self-start text-xs">
+                  [BETA]
+                </div>
+              </div>
             </Link>
           )}
         </div>
         <div className="flex-1 items-center justify-center">
           {page === "/" ? (
-            <NavigationMenu>
-              {/* <NavigationMenuList>
+            <NavigationMenu className="m-auto flex flex-row items-center justify-center">
+              <NavigationMenuList>
                 <NavigationMenuItem>
                   <Link href="/classes" legacyBehavior passHref>
                     <NavigationMenuLink
@@ -95,7 +91,7 @@ const DesktopNav: React.FC<DesktopNavProps> = ({ page }) => {
                     </NavigationMenuLink>
                   </Link>
                 </NavigationMenuItem>
-              </NavigationMenuList> */}
+              </NavigationMenuList>
             </NavigationMenu>
           ) : (
             <NavigationMenu></NavigationMenu>
