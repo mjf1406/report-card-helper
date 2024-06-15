@@ -53,6 +53,11 @@
 
 These tables together will allow you to manage the relationships between teachers, students, and classes efficiently, catering to both the many-to-many relationships and maintaining flexibility for various operations such as enrollments, class assignments, and more. This structure should serve as a robust foundation for your Next.js application using Turso as your database backend.
 
+-- Insert myself as a teacher
+INSERT INTO teachers (teacher_id, teacher_name, teacher_email)
+VALUES
+('user_2hJQqqywkygYAjPEoAncvveceXL', 'Michael Fitzgerald','michael.fitzgerald.1406@gmail.com');
+
 -- Inserting data into the Teachers table
 INSERT INTO teachers (teacher_id, teacher_name, teacher_email)
 VALUES
@@ -65,7 +70,8 @@ VALUES
 (7, 'Nora Bates', 'norabates@example.com'),
 (8, 'Jerry Long', 'jerrylong@example.com'),
 (9, 'Olivia Shore', 'oliviashore@example.com'),
-(10, 'Ian Gruff', 'iangruff@example.com');
+(10, 'Ian Gruff', 'iangruff@example.com'),
+('user_2hJQqqywkygYAjPEoAncvveceXL', 'Michael Fitzgerald','michael.fitzgerald.1406@gmail.com');
 
 -- Inserting data into the Classes table
 INSERT INTO classes (class_id, class_name, class_language)
@@ -109,6 +115,20 @@ VALUES
 (9, 9, 9),
 (10, 10, 10);
 
+-- Make every student part of Physics 201
+INSERT INTO student_classes (enrollment_id, student_id, class_id)
+VALUES
+(11, 1, 2),
+(12, 2, 2),
+(13, 3, 2),
+(14, 4, 2),
+(15, 5, 2),
+(16, 6, 2),
+(17, 7, 2),
+(18, 8, 2),
+(19, 9, 2),
+(20, 10, 2);
+
 -- Inserting data into the TeacherClasses table
 INSERT INTO teacher_classes (assignment_id, teacher_id, class_id, role)
 VALUES
@@ -121,8 +141,8 @@ VALUES
 (7, 7, 7, 'primary'),
 (8, 8, 8, 'assistant'),
 (9, 9, 9, 'primary'),
-(10, 1, 10, 'assistant');
-(11, user_2hJQqqywkygYAjPEoAncvveceXL, 2, 'assistant');
-(12, user_2hJQqqywkygYAjPEoAncvveceXL, 10, 'primary');
-(13, user_2hJQqqywkygYAjPEoAncvveceXL, 1, 'assistant');
-(14, user_2hJQqqywkygYAjPEoAncvveceXL, 5, 'primary');
+(10, 1, 10, 'assistant'),
+(11, 'user_2hJQqqywkygYAjPEoAncvveceXL', 2, 'assistant'),
+(12, 'user_2hJQqqywkygYAjPEoAncvveceXL', 10, 'primary'),
+(13, 'user_2hJQqqywkygYAjPEoAncvveceXL', 1, 'assistant'),
+(14, 'user_2hJQqqywkygYAjPEoAncvveceXL', 5, 'primary');

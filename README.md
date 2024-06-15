@@ -41,7 +41,7 @@ This web app creates a frontend for the Younghoon Elementary School report card 
     - Inquiry
     - Risk-Taking
     - Open-Minded
-- First Comment (text area)
+    - Skills/Habits (text area)
 - Subjects (S1 and S2 and Strengths/Next Steps for Improvement)
   - Reading
   - Writing

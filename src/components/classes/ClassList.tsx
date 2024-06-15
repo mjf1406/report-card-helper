@@ -23,8 +23,7 @@ interface Courses {
 
 export function databaseClassesToCourseMap(data: object[]) {
   const classes = [];
-  for (let index = 0; index < data.length; index++) {
-    const element = data[index];
+  for (const element of data) {
     classes.push({
       class_id: element?.classes?.class_id,
       class_name: element?.classes?.class_name,
@@ -90,37 +89,52 @@ export default function ClassList() {
 
   return (
     <div className="m-auto flex w-full max-w-3xl flex-col gap-4">
-      {courses.map((course) => (
-        <div
-          key={course.class_id}
-          className="m-auto flex w-full gap-10 rounded-2xl bg-card-foreground/10 p-3"
-        >
-          <div className="flex flex-1 flex-col justify-center self-start">
-            <div className="text-base font-bold lg:text-xl">
-              {course.class_name}
+      {courses.length === 0 ? (
+        <div className="flex flex-col gap-5">
+          <div className="rounded-xl bg-foreground/5 p-5">
+            <div className="flex items-center justify-center gap-2">
+              <div>Add a class by clicking the button above.</div>
             </div>
-            <div className="text-sm italic lg:text-sm">{course.role}</div>
-          </div>
-          <div className="m-auto flex h-full flex-1 items-end justify-end gap-2 self-end">
-            <Button
-              asChild
-              variant={"outline"}
-              className="flex gap-2 bg-inherit"
-            >
-              <Link href={`/classes/${course.class_id}`}>
-                <ScrollText className="h-5 w-5"></ScrollText>
-                <span className="hidden md:block">Quest</span>
-              </Link>
-            </Button>
-            <Button variant={"ghost"} className="px-2 py-1">
-              <Settings className="h-5 w-5"></Settings>
-            </Button>
-            <Button variant={"ghost"} className="px-2 py-1">
-              <SquarePen className="h-5 w-5"></SquarePen>
-            </Button>
           </div>
         </div>
-      ))}
+      ) : (
+        courses.map((course) => (
+          <div
+            key={course.class_id}
+            className="m-auto flex w-full gap-10 rounded-2xl bg-card-foreground/10 p-3"
+          >
+            <div className="flex flex-1 flex-col justify-center self-start">
+              <div className="text-base font-bold lg:text-xl">
+                {course.class_name}
+              </div>
+              <div className="text-sm italic lg:text-sm">{course.role}</div>
+            </div>
+            <div className="m-auto flex h-full flex-1 items-end justify-end gap-2 self-end">
+              <Button
+                asChild
+                variant={"outline"}
+                className="flex gap-2 bg-inherit"
+              >
+                <Link href={`/classes/${course.class_id}`}>
+                  <span className="hidden md:block">Open</span>
+                </Link>
+              </Button>
+              <Button variant={"ghost"} className="px-2 py-1">
+                <Settings className="h-5 w-5"></Settings>
+              </Button>
+              <Button
+                asChild
+                variant={"ghost"}
+                className="bg-inherit px-2 py-1"
+              >
+                <Link href={`/classes/${course.class_id}/edit`}>
+                  <SquarePen className="h-5 w-5" />
+                </Link>
+              </Button>
+            </div>
+          </div>
+        ))
+      )}
     </div>
   );
 }

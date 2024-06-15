@@ -30,7 +30,6 @@ import {
   useClerk,
 } from "@clerk/clerk-react";
 import { Skeleton } from "../skeleton";
-import NewClassDialog from "~/components/classes/NewClassDialog";
 
 interface DesktopNavProps {
   page: string;
@@ -86,35 +85,17 @@ const DesktopNav: React.FC<DesktopNavProps> = ({ page }) => {
         <div className="flex-1 items-center justify-center">
           {page === "/" ? (
             <NavigationMenu>
-              <NavigationMenuList>
+              {/* <NavigationMenuList>
                 <NavigationMenuItem>
-                  <Link href="#features" legacyBehavior passHref>
+                  <Link href="/classes" legacyBehavior passHref>
                     <NavigationMenuLink
                       className={navigationMenuTriggerStyle()}
                     >
-                      Features
+                      My classes
                     </NavigationMenuLink>
                   </Link>
                 </NavigationMenuItem>
-                <NavigationMenuItem>
-                  <Link href="#pricing" legacyBehavior passHref>
-                    <NavigationMenuLink
-                      className={navigationMenuTriggerStyle()}
-                    >
-                      Pricing
-                    </NavigationMenuLink>
-                  </Link>
-                </NavigationMenuItem>
-                <NavigationMenuItem>
-                  <Link href="#faq" legacyBehavior passHref>
-                    <NavigationMenuLink
-                      className={navigationMenuTriggerStyle()}
-                    >
-                      FAQ
-                    </NavigationMenuLink>
-                  </Link>
-                </NavigationMenuItem>
-              </NavigationMenuList>
+              </NavigationMenuList> */}
             </NavigationMenu>
           ) : (
             <NavigationMenu></NavigationMenu>

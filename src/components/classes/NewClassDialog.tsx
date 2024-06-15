@@ -1,8 +1,7 @@
 "use client";
 
-import { Plus, Info } from "lucide-react";
+import { Plus, Info, ExternalLink } from "lucide-react";
 import { Button } from "~/components/ui/button";
-import Divider from "~/components/ui/divider";
 import {
   Dialog,
   DialogClose,
@@ -14,15 +13,6 @@ import {
   DialogTrigger,
 } from "~/components/ui/dialog";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  SelectGroup,
-  SelectLabel,
-} from "~/components/ui/select";
-import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
@@ -30,13 +20,13 @@ import {
 } from "~/components/ui/tooltip";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
-import ImportGoogleClassesDialog from "./ImportGoogleClassesDialog";
 import { useAuth } from "@clerk/nextjs";
 import insertClass from "~/server/actions/insertClass";
 import { useState } from "react";
 import type { Data } from "~/server/actions/insertClass";
 import { useToast } from "~/components/ui/use-toast";
 import EventBus from "~/lib/EventBus";
+import Link from "next/link";
 
 export default function NewClassDialog() {
   const { userId } = useAuth();
@@ -44,6 +34,7 @@ export default function NewClassDialog() {
   const [classLanguage, setClassLanguage] = useState("en"); // Default to English
   const [teacherRole, setTeacherRole] = useState("primary"); // Default to primary
   const [open, setOpen] = useState(false);
+  const [file, setFile] = useState(null);
   const { toast } = useToast();
 
   const handleCreateClass = async () => {
@@ -51,30 +42,43 @@ export default function NewClassDialog() {
       alert("User not authenticated.");
       return;
     }
+    if (!file) {
+      alert("Please select a file to upload.");
+      return;
+    }
+    if (!className || className === "") {
+      alert("Please input a class name");
+      return;
+    }
 
-    try {
+    const reader = new FileReader();
+    reader.onload = async function (event) {
+      const text = event.target.result;
       const newClass: Data = {
-        class_id: "", // `class_id` will be generated on the server
         class_name: className,
         class_language: classLanguage,
         role: teacherRole,
+        fileContents: text, // Assuming the file is JSON or properly stringified
       };
 
-      await insertClass(newClass, userId);
-      setOpen(false);
-      toast({
-        title: "Class created successfully!",
-        description: `${className} was successfully created with you as ${teacherRole} teacher.`,
-      });
-      EventBus.emit("classAdded", newClass);
-    } catch (error) {
-      console.error("Failed to create class:", error);
-      toast({
-        variant: "destructive",
-        title: "Failed to create the class!",
-        description: "Please try again.",
-      });
-    }
+      try {
+        await insertClass(newClass, userId);
+        setOpen(false);
+        toast({
+          title: "Class created successfully!",
+          description: `${className} was successfully created with you as ${teacherRole} teacher.`,
+        });
+        EventBus.emit("classAdded", newClass);
+      } catch (error) {
+        console.error("Failed to create class:", error);
+        toast({
+          variant: "destructive",
+          title: "Failed to create the class!",
+          description: "Please try again.",
+        });
+      }
+    };
+    reader.readAsText(file);
   };
 
   return (
@@ -95,11 +99,69 @@ export default function NewClassDialog() {
               Create a new class to add to your class list.
             </DialogDescription>
           </DialogHeader>
-          <div className="flex items-center space-x-2">
-            <ImportGoogleClassesDialog />
+          <div className="flex flex-col items-start gap-2 space-x-2">
+            <h2 className="flex items-center gap-1 text-2xl">
+              Step 1
+              <span className="">
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Info width={18}></Info>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>
+                        <b>
+                          Where&apos;s the Google Classroom import? Why must I
+                          use Google Sheets?
+                        </b>{" "}
+                        There is no Google Classroom import because importing
+                        from Google Classroom does not include the student
+                        number. So, you would have to add this on the website,
+                        which I think has more friction than using Google Sheets
+                        because it&apos;s probable that teachers already have 2
+                        or 3 out of the 4 columns available in a Google Sheet.{" "}
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </span>
+            </h2>
+            <Link
+              href={
+                "https://docs.google.com/spreadsheets/d/1esh8Wu7e2nNYWg_puYzogWoWbwgRs1PK_8sVoXi0ysY/edit?usp=sharing"
+              }
+              rel="noopener noreferrer"
+              target="_blank"
+              className="flex items-center underline"
+            >
+              Make a copy of and fill out the Class Template{" "}
+              <ExternalLink className="ml-1 h-4 w-4" />
+            </Link>
           </div>
-          <Divider text="Or" />
-          <div className="flex items-center space-x-2">
+          <div className="flex flex-col items-start gap-2 space-x-2">
+            <h2 className="text-2xl">Step 2</h2>
+            <p>
+              <Label>
+                From Google Sheets, download the Class Template as{" "}
+                <b>Comma-separated values (.csv)</b>.
+              </Label>
+            </p>
+          </div>
+          <div className="flex flex-col items-start gap-2 space-x-2">
+            <h2 className="text-2xl">Step 3</h2>
+            <div className="grid w-full max-w-sm items-center gap-1.5">
+              <Label htmlFor="class-template-upload">
+                Upload the Class Template
+              </Label>
+              <Input
+                id="class-template-upload"
+                type="file"
+                onChange={(e) => setFile(e.target.files[0])}
+              />
+            </div>
+          </div>
+          <div className="flex flex-col items-start space-x-2">
+            <h2 className="text-2xl">Step 4</h2>
             <div className="grid flex-1 gap-2">
               <Label htmlFor="class-name" className="flex items-center">
                 Class name{" "}
@@ -122,73 +184,6 @@ export default function NewClassDialog() {
                 value={className}
                 onChange={(e) => setClassName(e.target.value)}
               />
-            </div>
-          </div>
-          <div className="flex items-center space-x-2">
-            <div className="grid flex-1 gap-2">
-              <Label htmlFor="class-language" className="flex items-center">
-                Teacher role{" "}
-                <span className="pl-2">
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Info width={16}></Info>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>This is your role in the class as a teacher.</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </span>
-              </Label>
-              <Select onValueChange={setTeacherRole} value={teacherRole}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Select a role" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectLabel>Teacher role</SelectLabel>
-                    <SelectItem value="primary">Primary</SelectItem>
-                    <SelectItem value="assistant">Assistant</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          <div className="flex items-center space-x-2">
-            <div className="grid flex-1 gap-2">
-              <Label htmlFor="class-language" className="flex items-center">
-                Class language{" "}
-                <span className="pl-2">
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Info width={16}></Info>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>
-                          This will set the UI language that your students will
-                          be forced to use.
-                        </p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </span>
-              </Label>
-              <Select onValueChange={setClassLanguage} value={classLanguage}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Select a language" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectLabel>Class language</SelectLabel>
-                    <SelectItem value="en">English</SelectItem>
-                    <SelectItem value="ko">한국어</SelectItem>
-                    <SelectItem value="zhs">简体中文</SelectItem>
-                    <SelectItem value="zht">繁體中文</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
             </div>
           </div>
           <DialogFooter className="sm:justify-start">
