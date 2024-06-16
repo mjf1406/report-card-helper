@@ -7,12 +7,13 @@ This web app creates a frontend for the Younghoon Elementary School report card 
 ### p3
 
 - added: ingested all the data in the spreadsheet and inserted it into the db
+- added: created a map to the PDF (must skip the first 2 pages)s
+- added: Google refresh token is now handled, prompting the user to reauthorize
 
 ### p2
 
-- added: created a comment template for the grades to fill out
-- added: created a parser for the comment files
-- added: user can now upload a comment file for themselves or the whole grade
+- added: a way to import all data when creating a class
+- added: a way to export all data for a given class, so it may be imported should anything go wrong
 
 ### p1
 
@@ -21,29 +22,34 @@ This web app creates a frontend for the Younghoon Elementary School report card 
 - added: can now add student(s)
 - added: can now edit a class
 - added: can now edit a student
-  s
+- added: created a parser for the comment files
+- added: user can now upload a comment file for themselves or the whole grade
 
 ### p0
 
-- added: Google refresh token is now handled, prompting the user to reauthorize
-- added: created a map to the PDF (must skip the first 2 pages)s
-- added: a way to import all data when creating a class
-- added: a way to export all data for a given class, so it may be imported should anything go wrong
-- added: finished the report UI
+- added: when a user signs up, they are added to the teacher DB with their Clerk userId
 - added: report UI elements update the DB on change
 - added: report UI elements are set based on student data loaded
 - added: My classes in the nav now has loading state
 - added: Open class button now has loading state
 - added: Fill out button now has loading state
+- added: users can now upload Subject Achievement comments; inputs: year, grade, semester. Ensure the user knows that those comments already exist if wanting to reupload.
+- added: semester 1 and semester 2 tasks complete on the student roster page now load the correct numbers
 
 ## Change Log
+
+2024/06/16
+
+- added: finished the report UI
+- added: subject_achievement_comments table in the DB
+- added: created the [Subject Achievement Comments Template](https://docs.google.com/spreadsheets/d/1u277GDdX-56mExqmJrKHLZ1PslTXkcjne9Ischi5QXM/edit?usp=sharing) for the grades to fill out when uploading comments
 
 2024/06/15
 
 - added: a grade select when adding a class so that it can be used to compare to other classes later
 - added: initialized Drizzle or Prisma
 - added: user can log in with Google
-- added: can add a class with the Google Sheets template
+- added: can add a class with the [Class Template](https://docs.google.com/spreadsheets/d/1esh8Wu7e2nNYWg_puYzogWoWbwgRs1PK_8sVoXi0ysY/edit?usp=sharing)
 - added: student roster now loads when opening a class
 - added: started the form, which can be accessed when clicking the Fill Out button
 - added: laid the UI framework for numerous things

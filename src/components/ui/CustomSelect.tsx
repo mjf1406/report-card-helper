@@ -9,7 +9,7 @@ import {
 const CustomSelect = ({ placeholder, items }) => {
   return (
     <Select>
-      <SelectTrigger className="w-[180px]">
+      <SelectTrigger className="w-[75px]">
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent>

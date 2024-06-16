@@ -1,6 +1,7 @@
 "use client";
 
 import SkillsSelectGroup from "~/components/ui/SkillSelectGroup";
+import { Label } from "~/components/ui/label";
 import TopNav from "~/components/ui/navigation/TopNav";
 import { Textarea } from "~/components/ui/textarea";
 
@@ -61,26 +62,36 @@ const prefixes = {
 const twentyFirstCenturySkillsItems = [
   {
     value: "AB",
-    label: "Absent",
+    valueLong: "Absent",
+    label: "AB",
     desc: "Insufficient evidence to assign a level.",
   },
   {
     value: "CD",
-    label: "Consistently Demonstrates",
+    valueLong: "Consistently Demonstrates",
+    label: "CD",
     desc: "The student applies the skill, trait, or work habit consistently with minimal teacher support.",
   },
   {
     value: "P",
-    label: "Progressing",
+    valueLong: "Progressing",
+    label: "P",
     desc: "The student applies the skill, trait, or work habit regularly, though, needs additional teacher support at times.",
   },
   {
     value: "NY",
-    label: "Not Yet",
+    valueLong: "Not Yet",
+    label: "NY",
     desc: "The student has not yet applied the skill, trait, or work habit appropriately or does so with much teacher support.",
   },
 ];
-const subjectAchievementOptions = [1, 2, 3, 4, 5]; // This value fetches the Strengths/Next Steps for Improvement
+const subjectAchievementOptions = [
+  { value: 1, label: 1 },
+  { value: 2, label: 2 },
+  { value: 3, label: 3 },
+  { value: 4, label: 4 },
+  { value: 5, label: 5 },
+]; // This value fetches the Strengths/Next Steps for Improvement
 
 export default function EditStudent({
   params,
@@ -106,43 +117,289 @@ export default function EditStudent({
           <h2 className="text-2xl">
             21st Century Skills, Learner Traits, and Work Habits
           </h2>
-          <div className="flex flex-col gap-4">
-            {/* 21st Century Skills */}
-            <SkillsSelectGroup
-              label="Responsibility"
-              items={twentyFirstCenturySkillsItems}
-            />
-            <SkillsSelectGroup
-              label="Organization"
-              items={twentyFirstCenturySkillsItems}
-            />
-            <SkillsSelectGroup
-              label="Collaboration"
-              items={twentyFirstCenturySkillsItems}
-            />
-            <SkillsSelectGroup
-              label="Communication"
-              items={twentyFirstCenturySkillsItems}
-            />
-            <SkillsSelectGroup
-              label="Thinking"
-              items={twentyFirstCenturySkillsItems}
-            />
-            <SkillsSelectGroup
-              label="Inquiry"
-              items={twentyFirstCenturySkillsItems}
-            />
-            <SkillsSelectGroup
-              label="Risk-taking"
-              items={twentyFirstCenturySkillsItems}
-            />
-            <SkillsSelectGroup
-              label="Open-minded"
-              items={twentyFirstCenturySkillsItems}
-            />
-            <Textarea placeholder="Skill and Habits comment. No more than 350 words." />
-            {/* Subject Achievement */}
-            <div></div>
+          <div className="flex flex-row flex-wrap gap-5">
+            <div className="m-auto flex h-full flex-col items-center justify-center gap-2">
+              <SkillsSelectGroup
+                label="Responsibility"
+                className={"rounded-lg bg-foreground/10 px-3 py-2"}
+                items={twentyFirstCenturySkillsItems}
+              />
+              <SkillsSelectGroup
+                label="Organization"
+                className={"rounded-lg bg-foreground/10 px-3 py-2"}
+                items={twentyFirstCenturySkillsItems}
+              />
+              <SkillsSelectGroup
+                label="Collaboration"
+                className={"rounded-lg bg-foreground/10 px-3 py-2"}
+                items={twentyFirstCenturySkillsItems}
+              />
+              <SkillsSelectGroup
+                label="Communication"
+                className={"rounded-lg bg-foreground/10 px-3 py-2"}
+                items={twentyFirstCenturySkillsItems}
+              />
+              <SkillsSelectGroup
+                label="Thinking"
+                className={"rounded-lg bg-foreground/10 px-3 py-2"}
+                items={twentyFirstCenturySkillsItems}
+              />
+              <SkillsSelectGroup
+                label="Inquiry"
+                className={"rounded-lg bg-foreground/10 px-3 py-2"}
+                items={twentyFirstCenturySkillsItems}
+              />
+              <SkillsSelectGroup
+                label="Risk-taking"
+                className={"rounded-lg bg-foreground/10 px-3 py-2"}
+                items={twentyFirstCenturySkillsItems}
+              />
+              <SkillsSelectGroup
+                label="Open-minded"
+                className={"rounded-lg bg-foreground/10 px-3 py-2"}
+                items={twentyFirstCenturySkillsItems}
+              />
+            </div>
+            <div className="m-auto flex h-full max-w-lg flex-col justify-center gap-2 text-left text-xs">
+              <div>
+                <span className="font-bold">AB = Absent: </span>
+                <span>Insufficient evidence to assign a level.</span>
+              </div>
+              <div>
+                <span className="font-bold">
+                  CD = Consistently Demonstrates:{" "}
+                </span>
+                <span>
+                  The student applies the skill, trait, or work habit
+                  consistently with minimal teacher support.
+                </span>
+              </div>
+              <div>
+                <span className="font-bold">P = Progressing: </span>
+                <span>
+                  The student applies the skill, trait, or work habit regularly,
+                  though, needs additional teacher support at times.
+                </span>
+              </div>
+              <div>
+                <span className="font-bold">NY = Not Yet: </span>
+                <span>
+                  The student has not yet applied the skill, trait, or work
+                  habit appropriately or does so with much teacher support.
+                  Additional practice is required.
+                </span>
+              </div>
+            </div>
+          </div>
+          <h2 className="text-2xl">Skills and Habits Comment</h2>
+          <div className="2-full flex w-full max-w-5xl flex-1 flex-row flex-wrap justify-center gap-5">
+            <div className="m-auto h-full max-w-lg grow">
+              <Textarea
+                className="m-auto h-full w-full"
+                placeholder="Skill and Habits comment. I recommend you write this in Google Docs, then copy it over."
+              />
+            </div>
+            <div className="flex max-w-lg flex-col gap-2 text-xs">
+              <div className="text-lg font-bold">FOLLOW THIS TEMPLATE</div>
+              <div>
+                <b>(1. general positive statement)</b> Moonjung has made
+                remarkable progress over the course of semester one, both in her
+                participation as well as her academic effort.
+              </div>
+              <div>
+                <b>(2. student strengths)</b> She is responsible, she is aware
+                of her own actions in and around the school and can be trusted
+                by the teachers to be honest. Moonjung is organized. She can
+                follow a plan and process for completing her work most of the
+                time. She is also able to monitor, assess, and revise her plans
+                to complete any class work.
+              </div>
+              <div>
+                <b>(3. specific example, next steps)</b> When collaborating with
+                other students, Moonjung always shares her expertise with other
+                students communicating effectively, so her peers listen and
+                respect what she is saying. This was most evident during our
+                S.T.E.M activities. Occasionally, her willingness to help causes
+                her time management problems, because she ends up giving too
+                much of herself to other students and her own work suffers in
+                return. Despite this, she always approaches tasks with a
+                positive attitude and isn’t afraid to take risks.{" "}
+                <b>(next step)</b>&nbsp; Now and again, Moonjung could practice
+                saying ‘no’ to her peers to ensure she has the time she deserves
+                to do the very best job possible.
+              </div>
+              <div>
+                <b>(4. closing statement/ bonus next step if required)</b>{" "}
+                Moonjung perseveres and reflects on her strengths and
+                weaknesses. She makes an effort when responding to any
+                challenge. I know she will do well in semester two.
+              </div>
+            </div>
+          </div>
+          <h2 className="mt-10 text-center text-2xl">Subject Achievement</h2>
+          <div className="2-full flex w-full max-w-5xl flex-1 flex-row flex-wrap justify-center gap-5">
+            <div className="m-auto flex w-full flex-col items-center gap-4">
+              <div className="flex flex-1 flex-row flex-wrap items-center gap-5 rounded-lg bg-foreground/10 p-3">
+                <div>
+                  <SkillsSelectGroup
+                    label="Reading"
+                    items={subjectAchievementOptions}
+                  />
+                </div>
+                <div className="flex flex-row items-center gap-2">
+                  <Label>S1</Label>
+                  <Textarea
+                    className="m-auto w-full text-xs"
+                    placeholder="Select an option in the dropdown to load the comment..."
+                  />
+                  <Label>S2</Label>
+                  <Textarea
+                    className="m-auto w-full text-xs"
+                    placeholder="Select an option in the dropdown to load the comment..."
+                  />
+                </div>
+              </div>
+              <div className="flex flex-1 flex-row flex-wrap items-center gap-5 rounded-lg bg-foreground/10 p-3">
+                <div>
+                  <SkillsSelectGroup
+                    label="Writing"
+                    items={subjectAchievementOptions}
+                  />
+                </div>
+                <div className="flex flex-row items-center gap-2">
+                  <Label>S1</Label>
+                  <Textarea
+                    className="m-auto w-full text-xs"
+                    placeholder="Select an option in the dropdown to load the comment..."
+                  />
+                  <Label>S2</Label>
+                  <Textarea
+                    className="m-auto w-full text-xs"
+                    placeholder="Select an option in the dropdown to load the comment..."
+                  />
+                </div>
+              </div>
+              <div className="flex flex-1 flex-row flex-wrap items-center gap-5 rounded-lg bg-foreground/10 p-3">
+                <div>
+                  <SkillsSelectGroup
+                    label="Speaking"
+                    items={subjectAchievementOptions}
+                  />
+                </div>
+                <div className="flex flex-row items-center gap-2">
+                  <Label>S1</Label>
+                  <Textarea
+                    className="m-auto w-full text-xs"
+                    placeholder="Select an option in the dropdown to load the comment..."
+                  />
+                  <Label>S2</Label>
+                  <Textarea
+                    className="m-auto w-full text-xs"
+                    placeholder="Select an option in the dropdown to load the comment..."
+                  />
+                </div>
+              </div>
+              <div className="flex flex-1 flex-row flex-wrap items-center gap-5 rounded-lg bg-foreground/10 p-3">
+                <div>
+                  <SkillsSelectGroup
+                    label="Listening"
+                    items={subjectAchievementOptions}
+                  />
+                </div>
+                <div className="flex flex-row items-center gap-2">
+                  <Label>S1</Label>
+                  <Textarea
+                    className="m-auto w-full text-xs"
+                    placeholder="Select an option in the dropdown to load the comment..."
+                  />
+                  <Label>S2</Label>
+                  <Textarea
+                    className="m-auto w-full text-xs"
+                    placeholder="Select an option in the dropdown to load the comment..."
+                  />
+                </div>
+              </div>
+              <div className="flex flex-1 flex-row flex-wrap items-center gap-5 rounded-lg bg-foreground/10 p-3">
+                <div>
+                  <SkillsSelectGroup
+                    label="Use of English"
+                    items={subjectAchievementOptions}
+                  />
+                </div>
+                <div className="flex flex-row items-center gap-2">
+                  <Label>S1</Label>
+                  <Textarea
+                    className="m-auto w-full text-xs"
+                    placeholder="Select an option in the dropdown to load the comment..."
+                  />
+                  <Label>S2</Label>
+                  <Textarea
+                    className="m-auto w-full text-xs"
+                    placeholder="Select an option in the dropdown to load the comment..."
+                  />
+                </div>
+              </div>
+              <div className="flex flex-1 flex-row flex-wrap items-center gap-5 rounded-lg bg-foreground/10 p-3">
+                <div>
+                  <SkillsSelectGroup
+                    label="Mathematics"
+                    items={subjectAchievementOptions}
+                  />
+                </div>
+                <div className="flex flex-row items-center gap-2">
+                  <Label>S1</Label>
+                  <Textarea
+                    className="m-auto w-full text-xs"
+                    placeholder="Select an option in the dropdown to load the comment..."
+                  />
+                  <Label>S2</Label>
+                  <Textarea
+                    className="m-auto w-full text-xs"
+                    placeholder="Select an option in the dropdown to load the comment..."
+                  />
+                </div>
+              </div>
+              <div className="flex flex-1 flex-row flex-wrap items-center gap-5 rounded-lg bg-foreground/10 p-3">
+                <div>
+                  <SkillsSelectGroup
+                    label="Social Studies"
+                    items={subjectAchievementOptions}
+                  />
+                </div>
+                <div className="flex flex-row items-center gap-2">
+                  <Label>S1</Label>
+                  <Textarea
+                    className="m-auto w-full text-xs"
+                    placeholder="Select an option in the dropdown to load the comment..."
+                  />
+                  <Label>S2</Label>
+                  <Textarea
+                    className="m-auto w-full text-xs"
+                    placeholder="Select an option in the dropdown to load the comment..."
+                  />
+                </div>
+              </div>
+              <div className="flex flex-1 flex-row flex-wrap items-center gap-5 rounded-lg bg-foreground/10 p-3">
+                <div>
+                  <SkillsSelectGroup
+                    label="Science"
+                    items={subjectAchievementOptions}
+                  />
+                </div>
+                <div className="flex flex-row items-center gap-2">
+                  <Label>S1</Label>
+                  <Textarea
+                    className="m-auto w-full text-xs"
+                    placeholder="Select an option in the dropdown to load the comment..."
+                  />
+                  <Label>S2</Label>
+                  <Textarea
+                    className="m-auto w-full text-xs"
+                    placeholder="Select an option in the dropdown to load the comment..."
+                  />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </main>

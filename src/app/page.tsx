@@ -7,6 +7,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "~/components/ui/accordion";
+import { ExternalLink } from "lucide-react";
 
 export default function HomePage() {
   return (
@@ -119,9 +120,57 @@ export default function HomePage() {
                 Do you have any plans to add more features?
               </AccordionTrigger>
               <AccordionContent>
-                I do! Check out the roadmap if you&apos;re curious. Also, be on
-                the look out for your ideas if you submitted feedback or a
-                feature request 😁
+                I do! Check out the{" "}
+                <a
+                  href="https://github.com/users/mjf1406/projects/3"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline"
+                >
+                  roadmap
+                </a>{" "}
+                if you&apos;re curious and if you do, be on the look out for
+                your ideas if you submitted feedback or a feature request 😁 If
+                you want to see a more detailed list, check out the To-do List
+                section of the{" "}
+                <a
+                  href="https://github.com/mjf1406/report-card-helper/blob/main/README.md#to-do-list"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline"
+                >
+                  README
+                </a>
+                .
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="item-7">
+              <AccordionTrigger>How much does this cost?</AccordionTrigger>
+              <AccordionContent>
+                <p>
+                  Thanks to generous free plans from{" "}
+                  <a
+                    href="https://vercel.com/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline"
+                  >
+                    Vercel
+                  </a>{" "}
+                  for hosting and{" "}
+                  <a
+                    href="https://turso.tech/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline"
+                  >
+                    Turso
+                  </a>{" "}
+                  for the database, it costs me nothing right now, and so it
+                  costs you nothing, too! Yay! If it ever does cost me anything,
+                  I will shut it down, unless everyone is willing to contribute
+                  to the costs, or we can get YHES to pay for it 🤞
+                </p>
               </AccordionContent>
             </AccordionItem>
           </Accordion>
