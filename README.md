@@ -21,16 +21,20 @@ This web app creates a frontend for the Younghoon Elementary School report card 
 - added: can now add student(s)
 - added: can now edit a class
 - added: can now edit a student
+  s
 
 ### p0
 
 - added: Google refresh token is now handled, prompting the user to reauthorize
-- added: created a map to the PDF (must skip the first 2 pages)
+- added: created a map to the PDF (must skip the first 2 pages)s
 - added: a way to import all data when creating a class
 - added: a way to export all data for a given class, so it may be imported should anything go wrong
 - added: finished the report UI
 - added: report UI elements update the DB on change
 - added: report UI elements are set based on student data loaded
+- added: My classes in the nav now has loading state
+- added: Open class button now has loading state
+- added: Fill out button now has loading state
 
 ## Change Log
 
