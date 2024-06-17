@@ -4,6 +4,10 @@ This web app creates a frontend for the Younghoon Elementary School report card 
 
 ## To-do List
 
+### p4
+
+- added: next to each subject achievement, there will be 3 graphs: (1) that shows the current student's history at Younghoon, (2) the distribution of the current class, and (3) the distribution of the whole grade.
+
 ### p3
 
 - added: ingested all the data in [the spreadsheet](https://docs.google.com/spreadsheets/d/1nY6fEE1_C9idh2KdKHgh9Dr7T-69v7kdvCFpG91WcyA/edit?usp=sharing) and inserted it into the db
