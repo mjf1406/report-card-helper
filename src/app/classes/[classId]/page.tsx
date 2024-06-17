@@ -7,40 +7,53 @@ import { Loader2, SquarePen, Newspaper } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import Link from "next/link";
 import { databaseClassToCourseMap } from "~/server/actions/getClassById";
+import { type Course } from "~/server/db/types";
 
-interface Params {
+type Params = {
   classId: string;
-}
+};
 
-async function fetchStudentRoster(classId, userId): Promise<Course[]> {
+type data = {
+  class: [];
+  studentFields: [];
+  students: [];
+};
+
+async function fetchStudentRoster(
+  classId: string,
+  userId: string | null | undefined,
+): Promise<Course | undefined> {
   try {
     const url = new URL("/api/getClass", window.location.origin);
     url.searchParams.append("classId", classId);
-    url.searchParams.append("userId", userId);
-
-    // const response = await fetch("/api/getClass");
+    url.searchParams.append("userId", String(userId));
     const response = await fetch(url.toString());
     if (!response.ok) {
-      throw new Error("Failed to fetch Reparper student roster");
+      console.error("Failed to fetch student roster");
+      throw new Error("Failed to fetch student roster");
     }
-    const text = await response.text(); // Make this operation await so it completes here
-    const data: object[] = JSON.parse(text); // Parse the text to JSON
-    const classes: object = databaseClassToCourseMap(data); // Convert data to classes
-    console.log("🚀 ~ fetchStudentRoster ~ classes:", classes);
-    return classes; // Now return the fully populated array
-  } catch (error) {
-    return [];
+    const text: string = await response.text();
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const data: data = JSON.parse(text);
+    console.log("🚀 ~ data:", data);
+    const classData: Course | undefined = databaseClassToCourseMap(data);
+    console.log("🚀 ~ fetchStudentRoster ~ classData:", classData);
+    return classData;
+  } catch (err) {
+    const error = err as Error;
+    console.error("failed to parse course", error);
+    throw new Error("failed to parse course");
   }
 }
 
 export default function ClassDetails({ params }: { params: Params }) {
-  const [course, setCourse] = useState<Course[]>([]);
+  const [course, setCourse] = useState<Course>();
   const [isLoading, setIsLoading] = useState(true);
   const { userId } = useAuth();
   const classId = params.classId;
 
   useEffect(() => {
-    fetchStudentRoster(classId, userId).then((data) => {
+    void fetchStudentRoster(classId, userId).then((data) => {
       setCourse(data);
       setIsLoading(false);
     });
@@ -58,10 +71,10 @@ export default function ClassDetails({ params }: { params: Params }) {
             </h1>
           ) : (
             <>
-              <h1 className="text-5xl">{course.class_name}</h1>
+              <h1 className="text-5xl">{course?.class_name}</h1>
 
               <div className="m-auto flex w-full flex-1 shrink flex-col items-center justify-center gap-4">
-                {course.students.map((student) => (
+                {course?.students.map((student) => (
                   <div
                     key={student.student_id}
                     className="m-auto flex w-full max-w-3xl gap-10 rounded-2xl bg-card-foreground/10 p-3"

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { type FC } from "react";
 import {
   Select,
   SelectContent,
@@ -6,16 +6,27 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select";
-const CustomSelect = ({ placeholder, items }) => {
+
+/**
+ * Custom select component.
+ * @param {Object} props - The component props.
+ * @param {string} props.placeholder - The placeholder text.
+ * @param {Array<{ value: string, label: string }>} props.items - The list of select items.
+ * @returns {JSX.Element} The custom select component.
+ */
+const CustomSelect: FC<{
+  placeholder: string;
+  items: Array<{ value: string; label: string }>;
+}> = ({ placeholder, items }) => {
   return (
     <Select>
       <SelectTrigger className="w-[75px]">
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent>
-        {items.map((item) => (
-          <SelectItem key={item.value} value={item.value}>
-            {item.label}
+        {items.map(({ value, label }) => (
+          <SelectItem key={value} value={value}>
+            {label}
           </SelectItem>
         ))}
       </SelectContent>

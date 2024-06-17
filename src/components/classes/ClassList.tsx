@@ -6,66 +6,73 @@ import { Button } from "~/components/ui/button";
 import EventBus from "~/lib/EventBus";
 import Link from "next/link";
 import { downloadReportCards } from "~/server/actions/downloadReportCards";
+import { type TeacherCourse } from "~/server/db/types";
 
-interface Course {
-  class_id: string;
-  class_name: string;
-  class_language: string;
-  created_date: string;
-  updated_date: string;
-  assigned_date: string;
-  role: string;
-}
+type data = {
+  class: {
+    class_id: string;
+    class_name: string;
+    class_language: string;
+    class_grade: string;
+    created_date: string;
+    updated_date: string;
+    complete: boolean;
+  };
+  teacher_classes: {
+    assigned_date: string;
+    role: string;
+  };
+};
 
-interface Courses {
-  course: Course[];
-}
-
-export function databaseClassesToCourseMap(data: object[]) {
-  const classes = [];
+export function databaseClassesToCourseMap(data: data[]): TeacherCourse[] {
+  const classes: TeacherCourse[] = [];
   for (const element of data) {
     classes.push({
-      class_id: element?.classes?.class_id,
-      class_name: element?.classes?.class_name,
-      class_language: element?.classes?.class_language,
-      class_grade: element?.classes?.class_grade,
-      created_date: element?.classes?.created_date,
-      updated_date: element?.classes?.updated_date,
-      assigned_date: element?.teacher_classes?.assigned_date,
-      role: element?.teacher_classes?.role,
+      class_id: element.class.class_id,
+      class_name: element.class.class_name,
+      class_language: element.class.class_language,
+      class_grade: element.class.class_grade,
+      created_date: element.class.created_date,
+      updated_date: element.class.updated_date,
+      assigned_date: element.teacher_classes.assigned_date,
+      role: element.teacher_classes.role,
+      complete: element.class.complete,
     });
   }
   return classes;
 }
 
-async function fetchClassroomData(): Promise<Course[]> {
+async function fetchClassroomData(): Promise<TeacherCourse[]> {
   try {
     const response = await fetch("/api/getClasses");
     if (!response.ok) {
-      throw new Error("Failed to fetch Reparper classes data");
+      throw new Error("Failed to fetch classes data");
     }
-    const text = await response.text(); // Make this operation await so it completes here
-    const data = JSON.parse(text); // Parse the text to JSON
-    const classes = databaseClassesToCourseMap(data); // Convert data to classes
+    const text: string = await response.text(); // Make this operation await so it completes here
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const data: data = JSON.parse(text); // Parse the text to JSON
+    const classes: TeacherCourse[] = databaseClassesToCourseMap(data); // Convert data to classes
     return classes; // Now return the fully populated array
-  } catch (error) {
-    return [];
+  } catch (err) {
+    const error = err as Error;
+    console.error("failed to parse course", error);
+    throw new Error("failed to parse course");
   }
 }
 
 export default function ClassList() {
-  const [courses, setCourses] = useState<Course[]>([]);
+  const [courses, setCourses] = useState<TeacherCourse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    fetchClassroomData().then((data) => {
+    void fetchClassroomData().then((data) => {
       setCourses(data);
       setIsLoading(false);
     });
   }, []);
 
   useEffect(() => {
-    const handleNewClass = (newClass: Course) => {
+    const handleNewClass = (newClass: TeacherCourse) => {
       setCourses((prevCourses) => [...prevCourses, newClass]);
     };
 
