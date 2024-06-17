@@ -6,7 +6,7 @@ This web app creates a frontend for the Younghoon Elementary School report card 
 
 ### p4
 
-- added: next to each subject achievement, there will be 3 graphs: (1) that shows the current student's history at Younghoon, (2) the distribution of the current class, and (3) the distribution of the whole grade.
+- added: next to each subject achievement, there will be 3 graphs: (1) a line graph that shows the current student's history at Younghoon, (2) a bar graph of the distribution of the current class, and (3) a bar graph of the distribution of the whole grade.
 
 ### p3
 
