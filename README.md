@@ -24,6 +24,7 @@ This web app creates a frontend for the Younghoon Elementary School report card 
 - added: can now edit a student
 - added: created a parser for the comment files
 - added: user can now upload a comment file for themselves or the whole grade
+- added: 21st Century Skills (...) now have descriptions for each
 
 ### p0
 
