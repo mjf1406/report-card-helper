@@ -9,6 +9,7 @@ This web app creates a frontend for the Younghoon Elementary School report card 
 - added: ingested all the data in [the spreadsheet](https://docs.google.com/spreadsheets/d/1nY6fEE1_C9idh2KdKHgh9Dr7T-69v7kdvCFpG91WcyA/edit?usp=sharing) and inserted it into the db
 - added: created a map to the PDF (must skip the first 2 pages)s
 - added: Google refresh token is now handled, prompting the user to reauthorize
+- added: ingested the comments from [2024 Comments S1](https://docs.google.com/document/d/1xXIa8AHNXQWyHHjBBiuycQ7uT5LQPWu3l9NMzGXtj-g/edit?usp=sharing)
 
 ### p2
 
