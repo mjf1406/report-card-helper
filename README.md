@@ -18,7 +18,7 @@ This web app creates a frontend for the Younghoon Elementary School report card 
 ### p1
 
 - added: can now delete a class
-- added: can now way to delete student(s)
+- added: can now delete student(s)
 - added: can now add student(s)
 - added: can now edit a class
 - added: can now edit a student
@@ -28,7 +28,7 @@ This web app creates a frontend for the Younghoon Elementary School report card 
 
 ### p0
 
-- added: when a user signs up, they are added to the teacher DB with their Clerk userId
+- added: when a user signs up, they are added to the teacher DB with their Clerk userId and a demo class is added to their class list
 - added: report UI elements update the DB on change
 - added: report UI elements are set based on student data loaded
 - added: My classes in the nav now has loading state
