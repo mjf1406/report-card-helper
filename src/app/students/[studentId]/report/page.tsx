@@ -243,6 +243,7 @@ export default function EditStudent({
                 <div>
                   <SkillsSelectGroup
                     label="Reading"
+                    className={""}
                     items={subjectAchievementOptions}
                   />
                 </div>
@@ -263,6 +264,7 @@ export default function EditStudent({
                 <div>
                   <SkillsSelectGroup
                     label="Writing"
+                    className={""}
                     items={subjectAchievementOptions}
                   />
                 </div>
@@ -283,6 +285,7 @@ export default function EditStudent({
                 <div>
                   <SkillsSelectGroup
                     label="Speaking"
+                    className={""}
                     items={subjectAchievementOptions}
                   />
                 </div>
@@ -303,6 +306,7 @@ export default function EditStudent({
                 <div>
                   <SkillsSelectGroup
                     label="Listening"
+                    className={""}
                     items={subjectAchievementOptions}
                   />
                 </div>
@@ -323,6 +327,7 @@ export default function EditStudent({
                 <div>
                   <SkillsSelectGroup
                     label="Use of English"
+                    className={""}
                     items={subjectAchievementOptions}
                   />
                 </div>
@@ -343,6 +348,7 @@ export default function EditStudent({
                 <div>
                   <SkillsSelectGroup
                     label="Mathematics"
+                    className={""}
                     items={subjectAchievementOptions}
                   />
                 </div>
@@ -363,6 +369,7 @@ export default function EditStudent({
                 <div>
                   <SkillsSelectGroup
                     label="Social Studies"
+                    className={""}
                     items={subjectAchievementOptions}
                   />
                 </div>
@@ -383,6 +390,7 @@ export default function EditStudent({
                 <div>
                   <SkillsSelectGroup
                     label="Science"
+                    className={""}
                     items={subjectAchievementOptions}
                   />
                 </div>

@@ -6,7 +6,7 @@ html {
   scroll-behavior: smooth;
 }
 
-@layer base {
+/* @layer base {
   :root {
     --background: 144 50% 96%;
     --foreground: 147 43% 9%;
@@ -50,6 +50,52 @@ html {
     --border: 147 47% 60%;
     --input: 147 47% 80%;
     --ring: 148 67% 60%;
+  }
+} */
+@layer base {
+  :root {
+    --background: 240 60% 99%;
+    --foreground: 243 76% 5%;
+    --card: 240 60% 99%;
+    --card-foreground: 243 76% 5%;
+    --popover: 240 60% 99%;
+    --popover-foreground: 243 76% 5%;
+    --primary: 210 100% 20%;
+    --primary-foreground: 240 60% 99%;
+    --secondary: 175 100% 37%;
+    --secondary-foreground: 243 76% 5%;
+    --muted: 240 61% 20%;
+    --muted-foreground: 243 76% 70%;
+    --accent: 0 0% 95%;
+    --accent-foreground: 243 76% 5%;
+    --destructive: 0 85% 60%;
+    --destructive-foreground: 243 76% 5%;
+    --border: 240 61% 20%;
+    --input: 240 61% 20%;
+    --ring: 0 0% 40%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 240 60% 1%;
+    --foreground: 243 76% 95%;
+    --card: 240 60% 1%;
+    --card-foreground: 243 76% 95%;
+    --popover: 240 60% 1%;
+    --popover-foreground: 243 76% 95%;
+    --primary: 210 100% 80%;
+    --primary-foreground: 240 60% 1%;
+    --secondary: 175 100% 63%;
+    --secondary-foreground: 240 60% 1%;
+    --muted: 240 61% 80%;
+    --muted-foreground: 243 76% 95%;
+    --accent: 0 0% 5%;
+    --accent-foreground: 243 76% 95%;
+    --destructive: 0 62% 30%;
+    --destructive-foreground: 243 76% 10%;
+    --border: 240 60% 60%;
+    --input: 240 61% 80%;
+    --ring: 0 0% 60%;
   }
 }
 

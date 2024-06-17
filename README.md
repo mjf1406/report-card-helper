@@ -19,6 +19,7 @@ This web app creates a frontend for the Younghoon Elementary School report card 
 
 - added: a way to import all data when creating a class
 - added: a way to export all data for a given class, so it may be imported should anything go wrong
+- added: breadcrumbs to the topnav
 
 ### p1
 
@@ -45,7 +46,8 @@ This web app creates a frontend for the Younghoon Elementary School report card 
 ## Change Log
 
 2024/06/17
-- feedback: EP Director said there was an issue with lines missing, but I could not replicate his issue. He did notice the text was far too small in the ACHIEVEMENT CODE box, which is true. The font size has been increased to 12 pt. font.
+
+- feedback: EP Director said there was an issue with lines missing, but I could not replicate the issue. He did notice the text was far too small in the ACHIEVEMENT CODE box, which is true. The font size has been increased to 12 pt. font.
 
 2024/06/16
 

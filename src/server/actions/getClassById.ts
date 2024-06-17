@@ -9,6 +9,19 @@ import { classes as classesTable,
 student_fields as studentFieldTable } from "../db/schema";
 import { sql, eq } from "drizzle-orm";
 
+export type Course: {
+
+}
+
+type Student = {
+    student_id: string;
+    student_number: string;
+    student_name_en: string;
+    student_sex: string;
+  };
+
+export 
+
 const getClassById = async (classId: string, userId: string) => {
     try {
         const classData = await db
@@ -45,7 +58,7 @@ function databaseClassToCourseMap(data: object[]) {
     classData.updated_date = data?.class[0]?.classes.updated_date;
     classData.class_grade = data?.class[0]?.classes.class_grade;
   
-    const teachers = [];
+    const teachers: Teacher[] = [];
     for (const teacher of data.class) {
         const teacherData = teacher.teacher_classes;
         teachers.push({
@@ -61,7 +74,7 @@ function databaseClassToCourseMap(data: object[]) {
     }
     classData.teachers = teachers;
   
-    const students = [];
+    const students: Student[] = [];
     for (let index = 0; index < data.students.length; index++) {
         const student = data.students[index];
         students.push({
