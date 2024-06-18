@@ -8,7 +8,6 @@ import { Loader2, User, Menu } from "lucide-react";
 import { ModeToggle } from "~/components/theme-toggle";
 import { Button } from "~/components/ui/button";
 
-import { cn } from "~/lib/utils";
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -40,7 +39,7 @@ const MobileNav: React.FC<MobileNavProps> = ({ page }) => {
     setMenuOpen(!isMenuOpen);
   };
 
-  const handleClick = (e) => {
+  const handleClick = () => {
     loadingSignIn(true);
   };
 

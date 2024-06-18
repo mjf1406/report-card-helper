@@ -5,7 +5,6 @@ import { Loader2, Download, SquarePen, School } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import EventBus from "~/lib/EventBus";
 import Link from "next/link";
-import { downloadReportCards } from "~/server/actions/downloadReportCards";
 import { type TeacherCourse } from "~/server/db/types";
 
 type data = {
@@ -50,7 +49,7 @@ async function fetchClassroomData(): Promise<TeacherCourse[]> {
     }
     const text: string = await response.text(); // Make this operation await so it completes here
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const data: data = JSON.parse(text); // Parse the text to JSON
+    const data: data[] = JSON.parse(text); // Parse the text to JSON
     const classes: TeacherCourse[] = databaseClassesToCourseMap(data); // Convert data to classes
     return classes; // Now return the fully populated array
   } catch (err) {
@@ -122,7 +121,7 @@ export default function ClassList() {
             </div>
             <div className="m-auto flex h-full flex-1 items-end justify-end gap-2 self-end">
               {course.complete ? (
-                <Button onClick={downloadReportCards}>
+                <Button>
                   <Download className="mr-2 h-4 w-4" />
                   Download Reports
                 </Button>

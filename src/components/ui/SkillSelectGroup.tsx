@@ -1,7 +1,23 @@
-import React from "react";
+import React, { type FC } from "react";
 import CustomSelect from "./CustomSelect"; // Ensure this path is correct based on your project structure
 
-const SkillsSelectGroup = ({ label, items, className }) => {
+/**
+ * Renders a group of skills select components.
+ * @param label - The label for the group.
+ * @param items - The items to be displayed in the select components.
+ * @param className - Additional CSS class for the container.
+ * @returns A JSX.Element representing the group of skills select components.
+ */
+
+type Item = {
+  value: string;
+  label: string | number;
+};
+const SkillsSelectGroup: FC<{
+  label: string;
+  items: Item[];
+  className?: string;
+}> = ({ label, items, className }) => {
   return (
     <div
       className={

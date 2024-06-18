@@ -10,6 +10,11 @@ interface Params {
   student: string;
 }
 
+type Student = {
+  student_name_en: string;
+  student_number: string;
+};
+
 const studentLetters: string[] = [
   "b",
   "c",
@@ -86,11 +91,11 @@ const twentyFirstCenturySkillsItems = [
   },
 ];
 const subjectAchievementOptions = [
-  { value: 1, label: 1 },
-  { value: 2, label: 2 },
-  { value: 3, label: 3 },
-  { value: 4, label: 4 },
-  { value: 5, label: 5 },
+  { value: "1", label: "1" },
+  { value: "2", label: "2" },
+  { value: "3", label: "3" },
+  { value: "4", label: "4" },
+  { value: "5", label: "5" },
 ]; // This value fetches the Strengths/Next Steps for Improvement
 
 export default function EditStudent({
@@ -100,8 +105,17 @@ export default function EditStudent({
   params: Params;
   searchParams: Params;
 }) {
-  const student = JSON.parse(searchParams?.student);
-  console.log("🚀 ~ EditStudent ~ student:", student);
+  let student: Student | null = null;
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    student = searchParams.student ? JSON.parse(searchParams.student) : null;
+  } catch (error) {
+    console.error("Failed to parse student data:", error);
+  }
+
+  if (!student) {
+    return <div>No student data available.</div>;
+  }
 
   return (
     <div>

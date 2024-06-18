@@ -11,12 +11,12 @@ import {
  * Custom select component.
  * @param {Object} props - The component props.
  * @param {string} props.placeholder - The placeholder text.
- * @param {Array<{ value: string, label: string }>} props.items - The list of select items.
+ * @param {Array<{ value: string, label: string | number}>} props.items - The list of select items.
  * @returns {JSX.Element} The custom select component.
  */
 const CustomSelect: FC<{
   placeholder: string;
-  items: Array<{ value: string; label: string }>;
+  items: Array<{ value: string; label: string | number }>;
 }> = ({ placeholder, items }) => {
   return (
     <Select>

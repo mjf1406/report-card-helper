@@ -8,7 +8,7 @@ export type Course = {
     class_grade: string | undefined;
     students: Student[];
     teachers: Teacher[];
-    complete: boolean;
+    complete: boolean | undefined;
 }
 
 export type Teacher = {

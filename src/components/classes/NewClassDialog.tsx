@@ -29,7 +29,7 @@ import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { useAuth } from "@clerk/nextjs";
 import insertClass from "~/server/actions/insertClass";
-import { useState } from "react";
+import React, { useState } from "react";
 import type { Data } from "~/server/actions/insertClass";
 import { useToast } from "~/components/ui/use-toast";
 import EventBus from "~/lib/EventBus";
@@ -42,7 +42,7 @@ export default function NewClassDialog() {
   const [classLanguage, setClassLanguage] = useState("en"); // Default to English
   const [teacherRole, setTeacherRole] = useState("primary"); // Default to primary
   const [open, setOpen] = useState(false);
-  const [file, setFile] = useState(null);
+  const [file, setFile] = React.useState<File | null>(null);
   const { toast } = useToast();
 
   const handleCreateClass = async () => {
@@ -61,13 +61,14 @@ export default function NewClassDialog() {
 
     const reader = new FileReader();
     reader.onload = async function (event) {
-      const text = event.target.result;
+      const text = event?.target?.result;
       const newClass: Data = {
+        class_id: undefined,
         class_name: className,
         class_language: classLanguage,
         class_grade: classGrade,
         role: teacherRole,
-        fileContents: text, // Assuming the file is JSON or properly stringified
+        fileContents: String(text),
       };
 
       try {
@@ -165,7 +166,13 @@ export default function NewClassDialog() {
               <Input
                 id="class-template-upload"
                 type="file"
-                onChange={(e) => setFile(e.target.files[0])}
+                onChange={(e) => {
+                  const file =
+                    e.target.files && e.target.files.length > 0
+                      ? e.target.files[0]
+                      : null;
+                  setFile(file ?? null);
+                }}
               />
             </div>
           </div>

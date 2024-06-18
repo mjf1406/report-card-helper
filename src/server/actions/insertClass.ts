@@ -10,68 +10,64 @@ import {
 } from "~/server/db/schema";
 import { randomUUID } from 'crypto'
 
-interface Student {
+type Student = {
     student_id: string; 
-    student_name_en: string;
-    student_name_ko: string;
-    student_sex: string;
-    student_number: number;
+    student_name_en: string | undefined;
+    student_name_ko: string | undefined;
+    student_sex: string | undefined;
+    student_number: string | undefined;
     student_email: string | null;
 }
 
-interface ClassData {
+type ClassData = {
     class_id: string;
     class_name: string;
     class_language: string;
     class_grade: string;
 }
 
-export interface Data {
-    class_id: string;
+export type Data = {
+    class_id: string | undefined;
     class_name: string;
     class_language: string;
     class_grade: string;
     role: string;
     fileContents: string;
-
 }
 
-interface TeacherClassData {
+type TeacherClassData = {
     assignment_id: string;
     teacher_id: string;
     class_id: string;
     role: string;
 }
 
-interface CSVStudent {
-    name_en: string;
-    name_ko: string;
-    sex: string;
-    number: string; // Parsing as string initially to handle potential non-numeric input gracefully
-}
+type CSVStudent = Record<string, string | undefined>;
 
 function generateUuidWithPrefix(prefix: string){
     return `${prefix}${randomUUID()}`
 }
+
 function csvToJson(csvString: string): CSVStudent[] {
     const lines = csvString.split('\n');
-    const result = [];
-    const headers = lines[0].split(',');
+    const result: CSVStudent[] = [];
+    const headers = lines[0]?.split(',') ?? [];
   
     for (let i = 1; i < lines.length; i++) {
-      let obj = {};
-      const currentline = lines[i].split(',');
+      const obj: CSVStudent = {};
+      const currentline = lines[i]?.split(',') ?? [];
   
-      if (currentline.length === headers.length) {
+      if (headers.length > 0 && currentline && currentline.length === headers.length) {
         for (let j = 0; j < headers.length; j++) {
-          obj[headers[j].trim()] = currentline[j].trim();
+            const header = headers[j]?.trim();
+            if (header === undefined) continue
+            obj[header] = currentline[j]?.trim() ?? '';
         }
-        result.push(obj as CSVStudent);
+        result.push(obj);
       }
     }
-  
     return result;
-}  
+  }
 
 export default async function insertClass(data: Data, userId: string) {
 
@@ -84,7 +80,7 @@ export default async function insertClass(data: Data, userId: string) {
         class_language: data.class_language,
         class_grade: data.class_grade,
     }
-    await db.insert(classesTable).values(classData)
+    // await db.insert(classesTable).values(classData)
 
     const assignmentId = generateUuidWithPrefix('assignment_')
     const teacherClassData: TeacherClassData = {
@@ -93,7 +89,7 @@ export default async function insertClass(data: Data, userId: string) {
         class_id: classId,
         role: data.role,
     }
-    await db.insert(teacherClassesTable).values(teacherClassData)
+    // await db.insert(teacherClassesTable).values(teacherClassData)
 
     const studentsJson = csvToJson(data.fileContents)
     const studentsData: Student[] = [];
@@ -103,12 +99,12 @@ export default async function insertClass(data: Data, userId: string) {
             student_name_en: student.name_en,
             student_name_ko: student.name_ko,
             student_sex: student.sex,
-            student_number: parseInt(student.number),
+            student_number: student.number,
             student_email: null,
         };
         studentsData.push(stud)
     }
-    await db.insert(studentsTable).values(studentsData)
+    // await db.insert(studentsTable).values(studentsData)
  
     const studentClassesData = []
     for (const student of studentsData) {

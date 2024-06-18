@@ -58,6 +58,7 @@ function databaseClassToCourseMap(
             created_date: string | undefined,
             updated_date: string | undefined,
             class_grade: string | undefined,
+            complete: boolean | undefined,
         },
         teachers: {
             teacher_name: string | undefined,
@@ -193,6 +194,7 @@ function databaseClassToCourseMap(
         created_date: data?.class[0]?.teacher_classes.created_date,
         updated_date: data?.class[0]?.teacher_classes.updated_date,
         class_grade: data?.class[0]?.teacher_classes.class_grade,
+        complete: data?.class[0]?.teacher_classes.complete,
         teachers: teachers,
         students: students,
     };
