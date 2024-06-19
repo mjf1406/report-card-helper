@@ -7,7 +7,7 @@ import EventBus from "~/lib/EventBus";
 import Link from "next/link";
 import { type TeacherCourse } from "~/server/db/types";
 
-type data = {
+type Data = {
   class: {
     class_id: string;
     class_name: string;
@@ -23,7 +23,7 @@ type data = {
   };
 };
 
-export function databaseClassesToCourseMap(data: data[]): TeacherCourse[] {
+export function databaseClassesToCourseMap(data: Data[]): TeacherCourse[] {
   const classes: TeacherCourse[] = [];
   for (const element of data) {
     classes.push({
@@ -48,8 +48,7 @@ async function fetchClassroomData(): Promise<TeacherCourse[]> {
       throw new Error("Failed to fetch classes data");
     }
     const text: string = await response.text(); // Make this operation await so it completes here
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const data: data[] = JSON.parse(text); // Parse the text to JSON
+    const data: Data[] = JSON.parse(text) as Data[];
     const classes: TeacherCourse[] = databaseClassesToCourseMap(data); // Convert data to classes
     return classes; // Now return the fully populated array
   } catch (err) {
@@ -64,22 +63,26 @@ export default function ClassList() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    void fetchClassroomData().then((data) => {
-      setCourses(data);
-      setIsLoading(false);
-    });
+    fetchClassroomData()
+      .then((data) => {
+        setCourses(data);
+        setIsLoading(false);
+      })
+      .catch(() => {
+        console.error("failed to fetch classroom data");
+      });
   }, []);
 
-  useEffect(() => {
-    const handleNewClass = (newClass: TeacherCourse) => {
-      setCourses((prevCourses) => [...prevCourses, newClass]);
-    };
+  // useEffect(() => {
+  //   const handleNewClass = (newClass: TeacherCourse) => {
+  //     setCourses((prevCourses) => [...prevCourses, newClass]);
+  //   };
 
-    EventBus.on("classAdded", handleNewClass);
-    return () => {
-      EventBus.off("classAdded", handleNewClass);
-    };
-  }, []);
+  //   EventBus.on("classAdded", handleNewClass);
+  //   return () => {
+  //     EventBus.off("classAdded", handleNewClass);
+  //   };
+  // }, []);
 
   if (isLoading) {
     return (

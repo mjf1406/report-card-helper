@@ -1,10 +1,11 @@
-// EventBus.js
 import EventEmitter from "events";
 
+type Func = () => void;
+
 export interface IEventBus {
-  on(event: string, listener: (...args: any[]) => void): this;
-  off(event: string, listener: (...args: any[]) => void): this;
-  emit(event: string, ...args: any[]): boolean;
+  on(event: string, listener: (...args: Func[]) => void): this;
+  off(event: string, listener: (...args: Func[]) => void): this;
+  emit(event: string, ...args: Func[]): boolean;
 }
 
 const EventBus: IEventBus = new EventEmitter();

@@ -78,7 +78,7 @@ export default function NewClassDialog() {
           title: "Class created successfully!",
           description: `${className} was successfully created with you as ${teacherRole} teacher.`,
         });
-        EventBus.emit("classAdded", newClass);
+        // EventBus.emit("classAdded", newClass);
       } catch (error) {
         console.error("Failed to create class:", error);
         toast({
