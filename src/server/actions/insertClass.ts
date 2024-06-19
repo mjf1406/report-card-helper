@@ -80,7 +80,7 @@ export default async function insertClass(data: Data, userId: string) {
         class_language: data.class_language,
         class_grade: data.class_grade,
     }
-    // await db.insert(classesTable).values(classData)
+    await db.insert(classesTable).values(classData)
 
     const assignmentId = generateUuidWithPrefix('assignment_')
     const teacherClassData: TeacherClassData = {
@@ -89,7 +89,7 @@ export default async function insertClass(data: Data, userId: string) {
         class_id: classId,
         role: data.role,
     }
-    // await db.insert(teacherClassesTable).values(teacherClassData)
+    await db.insert(teacherClassesTable).values(teacherClassData)
 
     const studentsJson = csvToJson(data.fileContents)
     const studentsData: Student[] = [];
@@ -104,7 +104,7 @@ export default async function insertClass(data: Data, userId: string) {
         };
         studentsData.push(stud)
     }
-    // await db.insert(studentsTable).values(studentsData)
+    await db.insert(studentsTable).values(studentsData)
  
     const studentClassesData = []
     for (const student of studentsData) {

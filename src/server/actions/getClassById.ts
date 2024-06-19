@@ -44,10 +44,23 @@ const getClassById = async (classId: string, userId: string | undefined) => {
  * @param data - Object containing class, students, and studentFields arrays.
  * @returns A Course object with strongly typed properties.
  */
-function databaseClassToCourseMap(
+async function databaseClassToCourseMap(
     data: {
     class: {
         teacher_classes: {
+            assigned_date: string | undefined,
+            assignment_id: string | undefined,
+            role: string | undefined,
+            teacher_id: string | undefined,
+            class_id: string | undefined,
+            class_name: string | undefined,
+            class_language: string | undefined,
+            created_date: string | undefined,
+            updated_date: string | undefined,
+            class_grade: string | undefined,
+            complete: boolean | undefined,
+        },
+        classes: {
             assigned_date: string | undefined,
             assignment_id: string | undefined,
             role: string | undefined,
@@ -125,7 +138,7 @@ function databaseClassToCourseMap(
             writing: string
         }
     }[]
-}): Course | undefined {
+}): Promise<Course | undefined> {
     if (!data) return undefined
 
     const teachers: Teacher[] = [];
@@ -188,17 +201,16 @@ function databaseClassToCourseMap(
     }
   
     const classData: Course = {
-        class_id: data?.class[0]?.teacher_classes.class_id,
-        class_name: data?.class[0]?.teacher_classes.class_name,
-        class_language: data?.class[0]?.teacher_classes.class_language,
-        created_date: data?.class[0]?.teacher_classes.created_date,
-        updated_date: data?.class[0]?.teacher_classes.updated_date,
-        class_grade: data?.class[0]?.teacher_classes.class_grade,
-        complete: data?.class[0]?.teacher_classes.complete,
+        class_id: data?.class[0]?.classes.class_id,
+        class_name: data?.class[0]?.classes.class_name,
+        class_language: data?.class[0]?.classes.class_language,
+        created_date: data?.class[0]?.classes.created_date,
+        updated_date: data?.class[0]?.classes.updated_date,
+        class_grade: data?.class[0]?.classes.class_grade,
+        complete: data?.class[0]?.classes.complete,
         teachers: teachers,
         students: students,
     };
-
     return classData;
 }
 

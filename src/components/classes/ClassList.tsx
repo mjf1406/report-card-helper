@@ -8,7 +8,7 @@ import Link from "next/link";
 import { type TeacherCourse } from "~/server/db/types";
 
 type Data = {
-  class: {
+  classes: {
     class_id: string;
     class_name: string;
     class_language: string;
@@ -23,19 +23,21 @@ type Data = {
   };
 };
 
-export function databaseClassesToCourseMap(data: Data[]): TeacherCourse[] {
+export async function databaseClassesToCourseMap(
+  data: Data[],
+): Promise<TeacherCourse[]> {
   const classes: TeacherCourse[] = [];
   for (const element of data) {
     classes.push({
-      class_id: element.class.class_id,
-      class_name: element.class.class_name,
-      class_language: element.class.class_language,
-      class_grade: element.class.class_grade,
-      created_date: element.class.created_date,
-      updated_date: element.class.updated_date,
+      class_id: element.classes.class_id,
+      class_name: element.classes.class_name,
+      class_language: element.classes.class_language,
+      class_grade: element.classes.class_grade,
+      created_date: element.classes.created_date,
+      updated_date: element.classes.updated_date,
       assigned_date: element.teacher_classes.assigned_date,
       role: element.teacher_classes.role,
-      complete: element.class.complete,
+      complete: element.classes.complete,
     });
   }
   return classes;
@@ -49,8 +51,8 @@ async function fetchClassroomData(): Promise<TeacherCourse[]> {
     }
     const text: string = await response.text(); // Make this operation await so it completes here
     const data: Data[] = JSON.parse(text) as Data[];
-    const classes: TeacherCourse[] = databaseClassesToCourseMap(data); // Convert data to classes
-    return classes; // Now return the fully populated array
+    const classes: TeacherCourse[] = await databaseClassesToCourseMap(data);
+    return classes;
   } catch (err) {
     const error = err as Error;
     console.error("failed to parse course", error);
@@ -68,8 +70,10 @@ export default function ClassList() {
         setCourses(data);
         setIsLoading(false);
       })
-      .catch(() => {
-        console.error("failed to fetch classroom data");
+      .catch((error) => {
+        const err = error as Error;
+        console.error("failed to fetch classes data", err);
+        throw new Error("failed to fetch classes", err);
       });
   }, []);
 

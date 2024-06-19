@@ -35,9 +35,7 @@ async function fetchStudentRoster(
     const text: string = await response.text();
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const data: data = JSON.parse(text);
-    console.log("🚀 ~ data:", data);
-    const classData: Course | undefined = databaseClassToCourseMap(data);
-    console.log("🚀 ~ fetchStudentRoster ~ classData:", classData);
+    const classData: Course | undefined = await databaseClassToCourseMap(data);
     return classData;
   } catch (err) {
     const error = err as Error;
