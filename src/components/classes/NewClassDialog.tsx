@@ -30,7 +30,7 @@ import { Label } from "~/components/ui/label";
 import { useAuth } from "@clerk/nextjs";
 import insertClass from "~/server/actions/insertClass";
 import React, { useState } from "react";
-import type { Data } from "~/server/actions/insertClass";
+import type { Data, ClassGrade, Role } from "~/server/actions/insertClass";
 import { useToast } from "~/components/ui/use-toast";
 import EventBus from "~/lib/EventBus";
 import Link from "next/link";
@@ -66,8 +66,8 @@ export default function NewClassDialog() {
         class_id: undefined,
         class_name: className,
         class_language: classLanguage,
-        class_grade: classGrade,
-        role: teacherRole,
+        class_grade: classGrade as ClassGrade,
+        role: teacherRole as Role,
         fileContents: String(text),
       };
 

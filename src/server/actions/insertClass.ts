@@ -1,6 +1,7 @@
 "use server"
 
 import { db } from "~/server/db/index";
+import { sql, SQL } from 'drizzle-orm';
 import { 
     classes as classesTable, 
     teacher_classes as teacherClassesTable,
@@ -8,30 +9,35 @@ import {
     student_classes as studentClassesTable,
     student_fields as studentFieldTable
 } from "~/server/db/schema";
-import { randomUUID } from 'crypto'
+import { randomUUID } from "crypto";
 
-type Student = {
-    student_id: string; 
-    student_name_en: string | undefined;
-    student_name_ko: string | undefined;
-    student_sex: string | undefined;
-    student_number: string | undefined;
+export type ClassGrade = "1" | "2" | "3" | "4" | "5";
+export type Role = "primary" | "assistant"
+
+export type Student = {
+    student_id: string;
+    student_name_en: string;
+    student_name_ko: string;
+    student_sex: "m" | "f" | null;
+    student_number: number | null;
     student_email: string | null;
+    joined_date?: string;
+    updated_date?: string;
 }
 
 type ClassData = {
     class_id: string;
     class_name: string;
     class_language: string;
-    class_grade: string;
+    class_grade: ClassGrade;
 }
 
 export type Data = {
     class_id: string | undefined;
     class_name: string;
     class_language: string;
-    class_grade: string;
-    role: string;
+    class_grade: ClassGrade;
+    role: Role;
     fileContents: string;
 }
 
@@ -39,7 +45,7 @@ type TeacherClassData = {
     assignment_id: string;
     teacher_id: string;
     class_id: string;
-    role: string;
+    role: Role;
 }
 
 type CSVStudent = Record<string, string | undefined>;
@@ -94,13 +100,17 @@ export default async function insertClass(data: Data, userId: string) {
     const studentsJson = csvToJson(data.fileContents)
     const studentsData: Student[] = [];
     for (const student of studentsJson) {
+        if (!student.name_en || !student.name_ko) {
+            console.warn(`Skipping student due to missing required field: ${JSON.stringify(student)}`);
+            continue
+        }
         const stud: Student = {
             student_id: generateUuidWithPrefix('student_'),
             student_name_en: student.name_en,
             student_name_ko: student.name_ko,
-            student_sex: student.sex,
-            student_number: student.number,
-            student_email: null,
+            student_sex: (student.sex === "m" || student.sex === "f") ? student.sex : null,
+            student_number: student.number ? parseInt(student.number, 10) : null,
+            student_email: student.email ?? null,
         };
         studentsData.push(stud)
     }
