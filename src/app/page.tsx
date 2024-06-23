@@ -11,6 +11,7 @@ import { Button } from "~/components/ui/button";
 import Link from "next/link";
 import { Loader2 } from "lucide-react";
 import React from "react";
+import UploadComments from "~/components/UploadComments";
 
 export default function HomePage() {
   const [isLoading, setLoading] = React.useState(false);
@@ -64,6 +65,9 @@ export default function HomePage() {
                 <Link href={`/classes`}>My classes</Link>
               </Button>
             )}
+          </div>
+          <div className="m-auto flex w-full items-center justify-center">
+            <UploadComments />
           </div>
         </div>
         <div className="mb-20">

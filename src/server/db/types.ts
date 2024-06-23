@@ -6,7 +6,19 @@ export type TeacherDb = {
     joined_date: string | undefined;
     updated_date: string | undefined;
 }
-
+export type CommentsDb = {
+    grade: string;
+    semester: string;
+    year: string;
+    listening: string;
+    mathematics: string;
+    reading: string;
+    science: string;
+    social_studies: string;
+    speaking: string;
+    use_of_english: string;
+    writing: string;
+}
 // Transformed Types
 export type Course = {
     class_id: string | undefined;

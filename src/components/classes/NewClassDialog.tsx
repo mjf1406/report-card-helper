@@ -234,17 +234,19 @@ export default function NewClassDialog() {
                 </TooltipProvider>
               </span>
             </h2>
-            <Link
-              href={
-                "https://docs.google.com/spreadsheets/d/1esh8Wu7e2nNYWg_puYzogWoWbwgRs1PK_8sVoXi0ysY/edit?usp=sharing"
-              }
-              rel="noopener noreferrer"
-              target="_blank"
-              className="flex items-center underline"
-            >
-              Make a copy of and fill out the Class Template{" "}
-              <ExternalLink className="ml-1 h-4 w-4" />
-            </Link>
+            <span className="no-wrap inline-block">
+              Make a copy of and fill out the
+              <Link
+                href={
+                  "https://docs.google.com/spreadsheets/d/1esh8Wu7e2nNYWg_puYzogWoWbwgRs1PK_8sVoXi0ysY/edit?usp=sharing"
+                }
+                rel="noopener noreferrer"
+                target="_blank"
+                className="flex items-center underline"
+              >
+                Class Template <ExternalLink className="ml-1 h-4 w-4" />
+              </Link>
+            </span>
             <span className="text-xs font-normal">
               The field <i>name_ko</i> is optional.
             </span>

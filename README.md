@@ -26,20 +26,20 @@ This web app creates a frontend for the Younghoon Elementary School report card 
 
 ### p1
 
-- added: created a parser for the comment files
-- added: users can now upload Subject Achievement comments; inputs: year, grade, semester. Ensure the user knows that those comments already exist if wanting to reupload.
 - added: 21st Century Skills (...) now have descriptions for each
 
 ### p0
 
-- added: report UI elements update the DB on change
-- added: report UI elements are set based on student data loaded
+- added: UI elements update the DB on change on `/report`
+- added: UI elements are set based on student data loaded on `/report`
 - added: semester 1 and semester 2 tasks complete on the student roster page now load the correct numbers
 
 ## Change Log
 
 2024/06/23
 
+- added: created a parser for the comment files
+- added: users can now upload Subject Achievement comments; inputs: year, grade, semester. Ensure the user knows that those comments already exist if wanting to reupload.
 - added: breadcrumbs to the topnav
 - added: can now remove a student from a class
 - added: can now remove a class
