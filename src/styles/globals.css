@@ -6,7 +6,7 @@ html {
   scroll-behavior: smooth;
 }
 
-/* @layer base {
+@layer base {
   :root {
     --background: 144 50% 96%;
     --foreground: 147 43% 9%;
@@ -51,8 +51,8 @@ html {
     --input: 147 47% 80%;
     --ring: 148 67% 60%;
   }
-} */
-@layer base {
+}
+/* @layer base {
   :root {
     --background: 240 60% 99%;
     --foreground: 243 76% 5%;
@@ -97,7 +97,7 @@ html {
     --input: 240 61% 80%;
     --ring: 0 0% 60%;
   }
-}
+} */
 
 @layer base {
   * {

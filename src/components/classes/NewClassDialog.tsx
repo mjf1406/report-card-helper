@@ -1,6 +1,6 @@
 "use client";
 
-import { Plus, Info, ExternalLink } from "lucide-react";
+import { Plus, Info, ExternalLink, Loader2 } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
@@ -28,14 +28,41 @@ import {
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { useAuth } from "@clerk/nextjs";
-import insertClass from "~/server/actions/insertClass";
+import insertClass, { type CSVStudent } from "~/server/actions/insertClass";
 import React, { useState } from "react";
 import type { Data, ClassGrade, Role } from "~/server/actions/insertClass";
 import { useToast } from "~/components/ui/use-toast";
-import EventBus from "~/lib/EventBus";
+// import EventBus from "~/lib/EventBus";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+
+function csvToJson(csvString: string): CSVStudent[] {
+  const lines = csvString.split("\n");
+  const result: CSVStudent[] = [];
+  const headers = lines[0]?.split(",") ?? [];
+
+  for (let i = 1; i < lines.length; i++) {
+    const obj: CSVStudent = {};
+    const currentline = lines[i]?.split(",") ?? [];
+
+    if (
+      headers.length > 0 &&
+      currentline &&
+      currentline.length === headers.length
+    ) {
+      for (let j = 0; j < headers.length; j++) {
+        const header = headers[j]?.trim();
+        if (header === undefined) continue;
+        obj[header] = currentline[j]?.trim() ?? "";
+      }
+      result.push(obj);
+    }
+  }
+  return result;
+}
 
 export default function NewClassDialog() {
+  const router = useRouter();
   const { userId } = useAuth();
   const [className, setClassName] = useState("");
   const [classGrade, setClassGrade] = useState("");
@@ -43,9 +70,68 @@ export default function NewClassDialog() {
   const [teacherRole, setTeacherRole] = useState("primary"); // Default to primary
   const [open, setOpen] = useState(false);
   const [file, setFile] = React.useState<File | null>(null);
+  const [isCsvValid, setCsvValid] = React.useState(false);
+  const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
+  const validateCsv = (file: File | null) => {
+    if (!file) {
+      console.error("Failed to create class:");
+      toast({
+        variant: "destructive",
+        title: "Failed to create the class!",
+        description: "Please upload a file.",
+      });
+      throw new Error("Please upload a file");
+    }
+    setFile(file ?? null);
+    const reader = new FileReader();
+    reader.onload = async function (event) {
+      const text = event?.target?.result as string;
+      const data = csvToJson(text);
+      let isValid = false;
+      for (const student of data) {
+        if (
+          !student.number ||
+          !student.sex ||
+          !student.name_en ||
+          student.number === null ||
+          student.sex === null ||
+          student.name_en === null ||
+          student.number === "" ||
+          student.sex === "" ||
+          student.name_en === ""
+        ) {
+          const errorMsg =
+            "One (or more) of the required fields is (are) empty. The required fields are number, sex, and name_en.";
+          console.error("Failed to create class:", errorMsg);
+          toast({
+            variant: "destructive",
+            title: "Invalid CSV!",
+            description: errorMsg,
+          });
+          isValid = false;
+          setCsvValid(false);
+          break;
+        }
+        isValid = true;
+      }
+      if (isValid) setCsvValid(true);
+    };
+    reader.readAsText(file);
+  };
+
   const handleCreateClass = async () => {
+    if (isCsvValid === false) {
+      const errorMsg =
+        "Invalid CSV: One (or more) of the required fields is (are) empty. The required fields are number, sex, and name_en.";
+      console.error("Failed to create class:", errorMsg);
+      return toast({
+        variant: "destructive",
+        title: "Failed to create class!",
+        description: errorMsg,
+      });
+    }
     if (!userId) {
       alert("User not authenticated.");
       return;
@@ -72,6 +158,7 @@ export default function NewClassDialog() {
       };
 
       try {
+        setLoading(true);
         await insertClass(newClass, userId);
         setOpen(false);
         toast({
@@ -79,7 +166,18 @@ export default function NewClassDialog() {
           description: `${className} was successfully created with you as ${teacherRole} teacher.`,
         });
         // EventBus.emit("classAdded", newClass);
+        try {
+          router.prefetch("/classes");
+          router.push("/classes");
+          router.refresh();
+          window.location.href = "/classes";
+        } catch (error) {
+          const err = error as Error;
+          console.error("Failed to refresh page:", err);
+          throw new Error("Failed to refresh page:", err);
+        }
       } catch (error) {
+        setLoading(false);
         console.error("Failed to create class:", error);
         toast({
           variant: "destructive",
@@ -147,6 +245,9 @@ export default function NewClassDialog() {
               Make a copy of and fill out the Class Template{" "}
               <ExternalLink className="ml-1 h-4 w-4" />
             </Link>
+            <span className="text-xs font-normal">
+              The field <i>name_ko</i> is optional.
+            </span>
           </div>
           <div className="flex flex-col items-start gap-2 space-x-2">
             <h2 className="text-2xl">Step 2</h2>
@@ -171,7 +272,7 @@ export default function NewClassDialog() {
                     e.target.files && e.target.files.length > 0
                       ? e.target.files[0]
                       : null;
-                  setFile(file ?? null);
+                  validateCsv(file ?? null);
                 }}
               />
             </div>
@@ -245,9 +346,16 @@ export default function NewClassDialog() {
               </Button>
             </DialogClose>
             <DialogFooter>
-              <Button type="submit" onClick={handleCreateClass}>
-                Create class
-              </Button>
+              {loading ? (
+                <Button disabled>
+                  <Loader2 className="mr-2 h-6 w-6 animate-spin" />
+                  Creating...
+                </Button>
+              ) : (
+                <Button type="submit" onClick={handleCreateClass}>
+                  Create class
+                </Button>
+              )}
             </DialogFooter>
           </DialogFooter>
         </DialogContent>

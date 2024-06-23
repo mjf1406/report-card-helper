@@ -11,7 +11,8 @@ This web app creates a frontend for the Younghoon Elementary School report card 
 ### p3
 
 - added: ingested all the data in [the spreadsheet](https://docs.google.com/spreadsheets/d/1nY6fEE1_C9idh2KdKHgh9Dr7T-69v7kdvCFpG91WcyA/edit?usp=sharing) and inserted it into the db
-- added: created a map to the PDF (must skip the first 2 pages)s
+  - this requires every single student have their own unique id, which it does in the the db, but not in the spreadsheet so there's no way to tell them apart
+- added: created a map to the PDF (must skip the first 2 pages's
 - added: Google refresh token is now handled, prompting the user to reauthorize
 - added: ingested the comments from [2024 Comments S1](https://docs.google.com/document/d/1xXIa8AHNXQWyHHjBBiuycQ7uT5LQPWu3l9NMzGXtj-g/edit?usp=sharing)
 
@@ -19,31 +20,39 @@ This web app creates a frontend for the Younghoon Elementary School report card 
 
 - added: a way to import all data when creating a class
 - added: a way to export all data for a given class, so it may be imported should anything go wrong
-- added: breadcrumbs to the topnav
-
-### p1
-
-- added: can now delete a class
-- added: can now delete student(s)
 - added: can now add student(s)
 - added: can now edit a class
 - added: can now edit a student
+
+### p1
+
 - added: created a parser for the comment files
-- added: user can now upload a comment file for themselves or the whole grade
+- added: users can now upload Subject Achievement comments; inputs: year, grade, semester. Ensure the user knows that those comments already exist if wanting to reupload.
 - added: 21st Century Skills (...) now have descriptions for each
 
 ### p0
 
-- added: when a user signs up, they are added to the teacher DB with their Clerk userId and a demo class is added to their class list
 - added: report UI elements update the DB on change
 - added: report UI elements are set based on student data loaded
-- added: My classes in the nav now has loading state
-- added: Open class button now has loading state
-- added: Fill out button now has loading state
-- added: users can now upload Subject Achievement comments; inputs: year, grade, semester. Ensure the user knows that those comments already exist if wanting to reupload.
 - added: semester 1 and semester 2 tasks complete on the student roster page now load the correct numbers
 
 ## Change Log
+
+2024/06/23
+
+- added: breadcrumbs to the topnav
+- added: can now remove a student from a class
+- added: can now remove a class
+- added: create class button now has a loading state
+
+2024/06/22
+
+- added: when a user signs up, they are added to the teacher DB with their Clerk userId and a demo class is added to their class list
+- added: the csv is now validated
+- added: My classes in the nav now has loading state
+- added: Open class button now has loading state
+- added: Fill out button now has loading state
+- added: `/classes` now refreshes when a new class is added
 
 2024/06/17
 

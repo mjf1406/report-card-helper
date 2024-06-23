@@ -7,14 +7,21 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "~/components/ui/accordion";
-import { ExternalLink } from "lucide-react";
+import { Button } from "~/components/ui/button";
+import Link from "next/link";
+import { Loader2 } from "lucide-react";
+import React from "react";
 
 export default function HomePage() {
+  const [isLoading, setLoading] = React.useState(false);
+  const handleMyClassesClick = () => {
+    setLoading(true);
+  };
   return (
     <>
       <TopNav />
-      <main className="flex min-h-screen flex-col items-center justify-center gap-2 bg-background p-5 text-foreground">
-        <div>
+      <main className="flex min-h-screen flex-col items-center justify-center gap-32 bg-background p-5 text-foreground">
+        <div className="flex flex-col gap-5">
           <h2 className="mb-10 mt-10 text-4xl">
             Welcome to your{" "}
             <span className="font-bold text-primary dark:text-secondary">
@@ -29,7 +36,7 @@ export default function HomePage() {
               per
             </span>
           </h2>
-          <div className="m-auto mb-20 w-full max-w-lg items-center justify-center">
+          <div className="m-auto w-full max-w-lg items-center justify-center">
             I hope you find this speeds up your workflow when making your report
             cards for your students. I spent dozens of hours building this site,
             so if you feel like it saved you some time, let me know on Google
@@ -45,6 +52,18 @@ export default function HomePage() {
               buy me an avocado
             </a>
             , my favorite fruit 🥑!
+          </div>
+          <div className="m-auto flex w-full items-center justify-center">
+            {isLoading ? (
+              <Button disabled>
+                <Loader2 className="mr-2 h-6 w-6 animate-spin" />
+                My classes
+              </Button>
+            ) : (
+              <Button asChild onClick={handleMyClassesClick}>
+                <Link href={`/classes`}>My classes</Link>
+              </Button>
+            )}
           </div>
         </div>
         <div className="mb-20">

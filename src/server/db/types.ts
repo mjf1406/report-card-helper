@@ -1,3 +1,12 @@
+// Server Types
+export type TeacherDb = {
+    teacher_id: string;
+    teacher_name: string;
+    teacher_email: string;
+    joined_date: string | undefined;
+    updated_date: string | undefined;
+}
+
 // Transformed Types
 export type Course = {
     class_id: string | undefined;

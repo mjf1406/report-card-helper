@@ -1,11 +1,25 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Loader2, Download, SquarePen, School } from "lucide-react";
+import { Loader2, Download, SquarePen, School, Trash2 } from "lucide-react";
 import { Button } from "~/components/ui/button";
-import EventBus from "~/lib/EventBus";
+// import EventBus from "~/lib/EventBus";
 import Link from "next/link";
 import { type TeacherCourse } from "~/server/db/types";
+import removeClassFromTeacher from "~/server/actions/removeClassFromTeacher";
+import { useToast } from "../ui/use-toast";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "~/components/ui/dialog";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
 
 type Data = {
   classes: {
@@ -63,6 +77,40 @@ async function fetchClassroomData(): Promise<TeacherCourse[]> {
 export default function ClassList() {
   const [courses, setCourses] = useState<TeacherCourse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [courseToDelete, setCourseToDelete] = useState<string | null>(null);
+  const [deleteCourseText, setDeleteCourseText] = useState("");
+  const [loadingButtonId, setLoadingButtonId] = useState<string | null>(null);
+  const { toast } = useToast();
+
+  async function handleDeleteClass(classId: string, className: string) {
+    if (className !== deleteCourseText) {
+      return toast({
+        title: "Class names do not match!",
+        description:
+          "This is case-sensitive. Please double check what you typed and try again.",
+        variant: "destructive",
+      });
+    }
+    try {
+      setLoadingButtonId(`delete-${classId}`);
+      await removeClassFromTeacher(classId);
+      setCourses(courses.filter((course) => course.class_id !== classId)); // remove the class from the list
+      toast({
+        title: "Class deleted successfully!",
+        description: `${className} has been successfully deleted.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Failed to delete class!",
+        description: "Please try again in a moment.",
+        variant: "destructive",
+      });
+    }
+  }
+
+  const handleMyClassesClick = (id: string) => {
+    setLoadingButtonId(id);
+  };
 
   useEffect(() => {
     fetchClassroomData()
@@ -76,17 +124,6 @@ export default function ClassList() {
         throw new Error("failed to fetch classes", err);
       });
   }, []);
-
-  // useEffect(() => {
-  //   const handleNewClass = (newClass: TeacherCourse) => {
-  //     setCourses((prevCourses) => [...prevCourses, newClass]);
-  //   };
-
-  //   EventBus.on("classAdded", handleNewClass);
-  //   return () => {
-  //     EventBus.off("classAdded", handleNewClass);
-  //   };
-  // }, []);
 
   if (isLoading) {
     return (
@@ -135,16 +172,37 @@ export default function ClassList() {
               ) : (
                 <></>
               )}
-              <Button
-                asChild
-                variant={"outline"}
-                className="flex gap-2 bg-inherit"
-              >
-                <Link href={`/classes/${course.class_id}`}>
-                  <School className="h-4 w-4" />
-                  <span className="hidden md:block">Open</span>
-                </Link>
-              </Button>
+              {loadingButtonId === `open-${course.class_id}` ? (
+                <Button
+                  key={`open-${course.class_id}`}
+                  variant={"outline"}
+                  disabled
+                >
+                  <Loader2 className="mr-2 h-6 w-6 animate-spin" />
+                  Open
+                </Button>
+              ) : (
+                <Button
+                  key={`open-${course.class_id}`}
+                  asChild
+                  variant={"outline"}
+                  onClick={() =>
+                    handleMyClassesClick(`open-${course.class_id}`)
+                  }
+                >
+                  <Link
+                    href={{
+                      pathname: `/classes/${course.class_id}`,
+                      query: {
+                        class_name: course?.class_name,
+                      },
+                    }}
+                  >
+                    <School className="mr-2 h-4 w-4" />
+                    Open
+                  </Link>
+                </Button>
+              )}
               <Button
                 asChild
                 variant={"ghost"}
@@ -154,6 +212,69 @@ export default function ClassList() {
                   <SquarePen className="h-5 w-5" />
                 </Link>
               </Button>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button
+                    variant={"destructive"}
+                    className=" px-2 py-1"
+                    onClick={() => setCourseToDelete(course.class_name)}
+                  >
+                    <Trash2 className="h-5 w-5" />
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-md">
+                  <DialogHeader>
+                    <DialogTitle>Delete class</DialogTitle>
+                    <DialogDescription>
+                      Please type the class name,{" "}
+                      <span id="class-id" className="font-bold">
+                        {courseToDelete}
+                      </span>
+                      , below in order to confirm deletion. Deleting a class is{" "}
+                      <b>IRREVERSIBLE</b>.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="flex items-center space-x-2">
+                    <div className="grid flex-1 gap-2">
+                      <Label htmlFor="link" className="sr-only">
+                        Class to delete
+                      </Label>
+                      <Input
+                        id="class-to-delete"
+                        value={deleteCourseText}
+                        onChange={(e) => setDeleteCourseText(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  <DialogFooter className="sm:justify-start">
+                    <DialogClose asChild>
+                      <Button type="button" variant="outline">
+                        Cancel
+                      </Button>
+                    </DialogClose>
+                    {loadingButtonId === `delete-${course.class_id}` ? (
+                      <Button
+                        key={`delete-${course.class_id}`}
+                        variant={"destructive"}
+                        disabled
+                      >
+                        <Loader2 className="mr-2 h-6 w-6 animate-spin" />
+                        Deleting...
+                      </Button>
+                    ) : (
+                      <Button
+                        key={`delete-${course.class_id}`}
+                        onClick={() =>
+                          handleDeleteClass(course.class_id, course.class_name)
+                        }
+                        variant={"destructive"}
+                      >
+                        Delete class
+                      </Button>
+                    )}
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
             </div>
           </div>
         ))

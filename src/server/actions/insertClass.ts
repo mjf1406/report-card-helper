@@ -1,7 +1,6 @@
 "use server"
 
 import { db } from "~/server/db/index";
-import { sql, SQL } from 'drizzle-orm';
 import { 
     classes as classesTable, 
     teacher_classes as teacherClassesTable,
@@ -10,6 +9,7 @@ import {
     student_fields as studentFieldTable
 } from "~/server/db/schema";
 import { randomUUID } from "crypto";
+import { revalidatePath } from "next/cache";
 
 export type ClassGrade = "1" | "2" | "3" | "4" | "5";
 export type Role = "primary" | "assistant"
@@ -48,7 +48,7 @@ type TeacherClassData = {
     role: Role;
 }
 
-type CSVStudent = Record<string, string | undefined>;
+export type CSVStudent = Record<string, string | undefined>;
 
 function generateUuidWithPrefix(prefix: string){
     return `${prefix}${randomUUID()}`
@@ -136,4 +136,5 @@ export default async function insertClass(data: Data, userId: string) {
         studentFieldData.push(stud)
     }
     await db.insert(studentFieldTable).values(studentFieldData)
+    revalidatePath("/classes");
 }

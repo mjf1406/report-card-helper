@@ -16,6 +16,14 @@ import {
   navigationMenuTriggerStyle,
 } from "~/components/ui/navigation-menu";
 import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "~/components/ui/breadcrumb";
+import {
   SignedIn,
   SignedOut,
   UserButton,
@@ -23,12 +31,9 @@ import {
   useClerk,
 } from "@clerk/clerk-react";
 import { Skeleton } from "~/components/ui/skeleton";
+import { type NavProps } from "./TopNav";
 
-interface MobileNavProps {
-  page: string;
-}
-
-const MobileNav: React.FC<MobileNavProps> = ({ page }) => {
+const MobileNav: React.FC<NavProps> = ({ page, course, student }) => {
   const { isSignedIn } = useAuth();
   const { loaded } = useClerk();
   const [loading, setLoading] = React.useState(true);
@@ -118,20 +123,54 @@ const MobileNav: React.FC<MobileNavProps> = ({ page }) => {
           isMenuOpen ? "fixed" : "hidden"
         }`}
       >
-        {page === "/" ? (
-          <NavigationMenu className=" z-20 m-auto flex w-full flex-col justify-start gap-10 p-3 text-2xl">
-            <NavigationMenuList className="flex w-full flex-col justify-start text-2xl">
-              <NavigationMenuItem>
-                <Link href="/classes" legacyBehavior passHref>
-                  <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                    My classes
-                  </NavigationMenuLink>
-                </Link>
-              </NavigationMenuItem>
-            </NavigationMenuList>
-          </NavigationMenu>
+        {page === "/" || page === "/classes" ? (
+          <NavigationMenu className="m-auto flex flex-row items-center justify-center"></NavigationMenu>
         ) : (
-          <NavigationMenu></NavigationMenu>
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/classes">Classes</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbLink>
+                  <Link
+                    href={{
+                      pathname: `/classes/${course?.class_id}`,
+                      query: {
+                        class_name: course?.class_name,
+                      },
+                    }}
+                  >
+                    {course?.class_name}
+                  </Link>
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              {student?.student_name ? (
+                <>
+                  <BreadcrumbSeparator />
+                  <BreadcrumbItem>
+                    <BreadcrumbLink>
+                      <Link
+                        href={{
+                          pathname: `/students/${student?.student_id}/report`,
+                          query: {
+                            student: JSON.stringify(student),
+                            class_name: course?.class_name,
+                            class_id: course?.class_id,
+                          },
+                        }}
+                      >
+                        {student?.student_name}
+                      </Link>
+                    </BreadcrumbLink>
+                  </BreadcrumbItem>
+                </>
+              ) : (
+                ""
+              )}
+            </BreadcrumbList>
+          </Breadcrumb>
         )}
       </div>
     </div>

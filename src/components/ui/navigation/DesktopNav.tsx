@@ -7,13 +7,6 @@ import { Loader2, User } from "lucide-react";
 
 import { ModeToggle } from "~/components/theme-toggle";
 import { Button } from "~/components/ui/button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "~/components/ui/tooltip";
-
 import { cn } from "~/lib/utils";
 import {
   NavigationMenu,
@@ -23,6 +16,14 @@ import {
   navigationMenuTriggerStyle,
 } from "~/components/ui/navigation-menu";
 import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "~/components/ui/breadcrumb";
+import {
   SignedIn,
   SignedOut,
   UserButton,
@@ -30,17 +31,19 @@ import {
   useClerk,
 } from "@clerk/clerk-react";
 import { Skeleton } from "../skeleton";
+import { type NavProps } from "./TopNav";
 
-interface DesktopNavProps {
-  page: string;
-}
-
-const DesktopNav: React.FC<DesktopNavProps> = ({ page }) => {
+const DesktopNav: React.FC<NavProps> = ({ page, course, student }) => {
   const { isSignedIn } = useAuth();
   const { loaded } = useClerk();
   const [loading, setLoading] = React.useState(true);
 
   const [isLoading, loadingSignIn] = React.useState(false);
+  const [isLoadingClasses, loadingClasses] = React.useState(false);
+
+  const handleMyClassesClick = () => {
+    loadingClasses(true);
+  };
 
   const handleClick = () => {
     loadingSignIn(true);
@@ -79,22 +82,54 @@ const DesktopNav: React.FC<DesktopNavProps> = ({ page }) => {
           )}
         </div>
         <div className="flex-1 items-center justify-center">
-          {page === "/" ? (
-            <NavigationMenu className="m-auto flex flex-row items-center justify-center">
-              <NavigationMenuList>
-                <NavigationMenuItem>
-                  <Link href="/classes" legacyBehavior passHref>
-                    <NavigationMenuLink
-                      className={navigationMenuTriggerStyle()}
-                    >
-                      My classes
-                    </NavigationMenuLink>
-                  </Link>
-                </NavigationMenuItem>
-              </NavigationMenuList>
-            </NavigationMenu>
+          {page === "/" || page === "/classes" ? (
+            <NavigationMenu className="m-auto flex flex-row items-center justify-center"></NavigationMenu>
           ) : (
-            <NavigationMenu></NavigationMenu>
+            <Breadcrumb>
+              <BreadcrumbList>
+                <BreadcrumbItem>
+                  <BreadcrumbLink href="/classes">Classes</BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                  <BreadcrumbLink>
+                    <Link
+                      href={{
+                        pathname: `/classes/${course?.class_id}`,
+                        query: {
+                          class_name: course?.class_name,
+                        },
+                      }}
+                    >
+                      {course?.class_name}
+                    </Link>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+                {student?.student_name ? (
+                  <>
+                    <BreadcrumbSeparator />
+                    <BreadcrumbItem>
+                      <BreadcrumbLink>
+                        <Link
+                          href={{
+                            pathname: `/students/${student?.student_id}/report`,
+                            query: {
+                              student: JSON.stringify(student),
+                              class_name: course?.class_name,
+                              class_id: course?.class_id,
+                            },
+                          }}
+                        >
+                          {student?.student_name}
+                        </Link>
+                      </BreadcrumbLink>
+                    </BreadcrumbItem>
+                  </>
+                ) : (
+                  ""
+                )}
+              </BreadcrumbList>
+            </Breadcrumb>
           )}
         </div>
         <div className="flex items-center justify-end gap-4">
