@@ -5,19 +5,24 @@ import { classes as classesTable,
     teacher_classes as teacherClassesTable, 
     students as studentTable, 
     student_classes as studentClassesTable,
-    teachers as teachersTable,
+    users as usersTable,
 student_fields as studentFieldTable } from "../db/schema";
 import { sql, eq } from "drizzle-orm";
 import { type Course, type Teacher, type Student, type StudentField } from "../db/types";
+import { isTeacherInClass } from "./isTeacherInClass";
 
 const getClassById = async (classId: string, userId: string | undefined) => {
+    if (!userId) throw new Error("User not authenticated")
+
+    const isTeacherInClassBool: boolean = await isTeacherInClass(userId, classId)
+    if (!isTeacherInClassBool) throw new Error("Unauthorized! You are not a teacher in this class.")
+        
     try {
-        if (!userId) throw new Error("User not authenticated")
         const classData = await db
             .select()
             .from(classesTable)
             .innerJoin(teacherClassesTable, eq(classesTable.class_id, teacherClassesTable.class_id))
-            .innerJoin(teachersTable, eq(teacherClassesTable.teacher_id, teachersTable.teacher_id))
+            .innerJoin(usersTable, eq(teacherClassesTable.user_id, usersTable.user_id))
             .where(eq(teacherClassesTable.class_id, classId))
         const students = await db
             .select()
@@ -51,7 +56,7 @@ async function databaseClassToCourseMap(
             assigned_date: string | undefined,
             assignment_id: string | undefined,
             role: string | undefined,
-            teacher_id: string | undefined,
+            user_id: string | undefined,
             class_id: string | undefined,
             class_name: string | undefined,
             class_language: string | undefined,
@@ -64,18 +69,19 @@ async function databaseClassToCourseMap(
             assigned_date: string | undefined,
             assignment_id: string | undefined,
             role: string | undefined,
-            teacher_id: string | undefined,
+            user_id: string | undefined,
             class_id: string | undefined,
             class_name: string | undefined,
             class_language: string | undefined,
+            class_year: string | undefined,
             created_date: string | undefined,
             updated_date: string | undefined,
             class_grade: string | undefined,
             complete: boolean | undefined,
         },
-        teachers: {
-            teacher_name: string | undefined,
-            teacher_email: string | undefined,
+        users: {
+            user_name: string | undefined,
+            user_email: string | undefined,
             joined_date: string | undefined,
             updated_date: string | undefined,
         }
@@ -96,51 +102,52 @@ async function databaseClassToCourseMap(
             student_number: string
         },
         student_fields: {
-            field_id: string | undefined,
-            collaboration: string | undefined,
-            communication: string | undefined,
-            inquiry: string | undefined,
-            listening: string | undefined,
-            mathematics: string | undefined,
-            open_minded: string | undefined,
-            organization: string | undefined,
-            reading: string | undefined,
-            responsibility: string | undefined,
-            risk_taking: string | undefined,
-            science: string | undefined,
-            skills_and_habits: string | undefined,
-            social_studies: string | undefined,
-            speaking: string | undefined,
-            thinking: string | undefined,
-            use_of_english: string | undefined,
-            writing: string
+            field_id: string;
+            student_id: string;
+            collaboration: { s1: string, s2: string };
+            communication: { s1: string, s2: string };
+            inquiry: { s1: string, s2: string };
+            listening: { s1: string, s1_comment: string, s2: string, s2_comment: string };
+            mathematics: { s1: string, s1_comment: string, s2: string, s2_comment: string };
+            open_minded: { s1: string, s2: string };
+            organization: { s1: string, s2: string };
+            reading: { s1: string, s1_comment: string, s2: string, s2_comment: string };
+            responsibility: { s1: string, s2: string };
+            risk_taking: { s1: string, s2: string };
+            science: { s1: string, s1_comment: string, s2: string, s2_comment: string };
+            social_studies: { s1: string, s1_comment: string, s2: string, s2_comment: string };
+            speaking: { s1: string, s1_comment: string, s2: string, s2_comment: string };
+            thinking: { s1: string, s2: string };
+            use_of_english: { s1: string, s1_comment: string, s2: string, s2_comment: string };
+            writing: { s1: string, s1_comment: string, s2: string, s2_comment: string };
+            comment: { s1: string, s2: string };
         }[]
     }[],
     studentFields: {
         student_fields: {
-            field_id: string | undefined,
-            collaboration: string | undefined,
-            communication: string | undefined,
-            inquiry: string | undefined,
-            listening: string | undefined,
-            mathematics: string | undefined,
-            open_minded: string | undefined,
-            organization: string | undefined,
-            reading: string | undefined,
-            responsibility: string | undefined,
-            risk_taking: string | undefined,
-            science: string | undefined,
-            skills_and_habits: string | undefined,
-            social_studies: string | undefined,
-            speaking: string | undefined,
-            thinking: string | undefined,
-            use_of_english: string | undefined,
-            writing: string
+            field_id: string;
+            student_id: string;
+            collaboration: { s1: string, s2: string };
+            communication: { s1: string, s2: string };
+            inquiry: { s1: string, s2: string };
+            listening: { s1: string, s1_comment: string, s2: string, s2_comment: string };
+            mathematics: { s1: string, s1_comment: string, s2: string, s2_comment: string };
+            open_minded: { s1: string, s2: string };
+            organization: { s1: string, s2: string };
+            reading: { s1: string, s1_comment: string, s2: string, s2_comment: string };
+            responsibility: { s1: string, s2: string };
+            risk_taking: { s1: string, s2: string };
+            science: { s1: string, s1_comment: string, s2: string, s2_comment: string };
+            social_studies: { s1: string, s1_comment: string, s2: string, s2_comment: string };
+            speaking: { s1: string, s1_comment: string, s2: string, s2_comment: string };
+            thinking: { s1: string, s2: string };
+            use_of_english: { s1: string, s1_comment: string, s2: string, s2_comment: string };
+            writing: { s1: string, s1_comment: string, s2: string, s2_comment: string };
+            comment: { s1: string, s2: string };
         }
     }[]
 }): Promise<Course | undefined> {
     if (!data) return undefined
-
     const teachers: Teacher[] = [];
 
     for (const teacher of data.class) {
@@ -150,11 +157,11 @@ async function databaseClassToCourseMap(
             assigned_date: teacherData.assigned_date,
             assignment_id: teacherData.assignment_id,
             role: teacherData.role,
-            teacher_id: teacherData.teacher_id,
-            teacher_name: teacher.teachers.teacher_name,
-            teacher_email: teacher.teachers.teacher_email,
-            joined_date: teacher.teachers.joined_date,
-            updated_date: teacher.teachers.updated_date,
+            user_id: teacherData.user_id,
+            user_name: teacher.users.user_name,
+            user_email: teacher.users.user_email,
+            joined_date: teacher.users.joined_date,
+            updated_date: teacher.users.updated_date,
         }
         teachers.push(teach);
     }
@@ -165,24 +172,25 @@ async function databaseClassToCourseMap(
         const student = data.students[index];
 
         const studentField: StudentField = {
-            field_id: data.studentFields[index]?.student_fields.field_id,
-            collaboration: data.studentFields[index]?.student_fields.collaboration,
-            communication: data.studentFields[index]?.student_fields.communication,
-            inquiry: data.studentFields[index]?.student_fields.inquiry,
-            listening: data.studentFields[index]?.student_fields.listening,
-            mathematics: data.studentFields[index]?.student_fields.mathematics,
-            open_minded: data.studentFields[index]?.student_fields.open_minded,
-            organization: data.studentFields[index]?.student_fields.organization,
-            reading: data.studentFields[index]?.student_fields.reading,
-            responsibility: data.studentFields[index]?.student_fields.responsibility,
-            risk_taking: data.studentFields[index]?.student_fields.risk_taking,
-            science: data.studentFields[index]?.student_fields.science,
-            skills_and_habits: data.studentFields[index]?.student_fields.skills_and_habits,
-            social_studies: data.studentFields[index]?.student_fields.social_studies,
-            speaking: data.studentFields[index]?.student_fields.speaking,
-            thinking: data.studentFields[index]?.student_fields.thinking,
-            use_of_english: data.studentFields[index]?.student_fields.use_of_english,
-            writing: data.studentFields[index]?.student_fields.writing,
+            field_id: data.studentFields[index]?.student_fields.field_id ?? "",
+            student_id: data.studentFields[index]?.student_fields.student_id ?? "",
+            collaboration: data.studentFields[index]?.student_fields.collaboration ?? {s1: "", s2: ""},
+            communication: data.studentFields[index]?.student_fields.communication ?? {s1: "", s2: ""},
+            inquiry: data.studentFields[index]?.student_fields.inquiry ?? {s1: "", s2: ""},
+            listening: data.studentFields[index]?.student_fields.listening ?? { s1: "", s1_comment: "", s2: "", s2_comment: "" },
+            mathematics: data.studentFields[index]?.student_fields.mathematics ?? { s1: "", s1_comment: "", s2: "", s2_comment: "" },
+            open_minded: data.studentFields[index]?.student_fields.open_minded ?? {s1: "", s2: ""},
+            organization: data.studentFields[index]?.student_fields.organization ?? {s1: "", s2: ""},
+            reading: data.studentFields[index]?.student_fields.reading ?? { s1: "", s1_comment: "", s2: "", s2_comment: "" },
+            responsibility: data.studentFields[index]?.student_fields.responsibility ?? {s1: "", s2: ""},
+            risk_taking: data.studentFields[index]?.student_fields.risk_taking ?? {s1: "", s2: ""},
+            science: data.studentFields[index]?.student_fields.science ?? { s1: "", s1_comment: "", s2: "", s2_comment: "" },
+            social_studies: data.studentFields[index]?.student_fields.social_studies ?? { s1: "", s1_comment: "", s2: "", s2_comment: "" },
+            speaking: data.studentFields[index]?.student_fields.speaking ?? { s1: "", s1_comment: "", s2: "", s2_comment: "" },
+            thinking: data.studentFields[index]?.student_fields.thinking ?? {s1: "", s2: ""},
+            use_of_english: data.studentFields[index]?.student_fields.use_of_english ?? { s1: "", s1_comment: "", s2: "", s2_comment: "" },
+            writing: data.studentFields[index]?.student_fields.writing ?? { s1: "", s1_comment: "", s2: "", s2_comment: "" },
+            comment: data.studentFields[index]?.student_fields.comment ?? {s1: "", s2: ""},
         }
 
         students.push({
@@ -204,9 +212,10 @@ async function databaseClassToCourseMap(
         class_id: data?.class[0]?.classes.class_id,
         class_name: data?.class[0]?.classes.class_name,
         class_language: data?.class[0]?.classes.class_language,
+        class_year: data?.class[0]?.classes.class_year,
+        class_grade: data?.class[0]?.classes.class_grade,
         created_date: data?.class[0]?.classes.created_date,
         updated_date: data?.class[0]?.classes.updated_date,
-        class_grade: data?.class[0]?.classes.class_grade,
         complete: data?.class[0]?.classes.complete,
         teachers: teachers,
         students: students,

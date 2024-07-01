@@ -67,6 +67,7 @@ export default function NewClassDialog() {
   const [className, setClassName] = useState("");
   const [classGrade, setClassGrade] = useState("");
   const [classLanguage, setClassLanguage] = useState("en"); // Default to English
+  const [classYear, setClassYear] = useState("");
   const [teacherRole, setTeacherRole] = useState("primary"); // Default to primary
   const [open, setOpen] = useState(false);
   const [file, setFile] = React.useState<File | null>(null);
@@ -153,6 +154,7 @@ export default function NewClassDialog() {
         class_name: className,
         class_language: classLanguage,
         class_grade: classGrade as ClassGrade,
+        class_year: classYear,
         role: teacherRole as Role,
         fileContents: String(text),
       };
@@ -339,6 +341,34 @@ export default function NewClassDialog() {
                   <SelectItem value="6">6</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+          </div>
+          <div className="flex flex-col items-start space-x-2">
+            <h2 className="text-2xl">Step 6</h2>
+            <div className="grid flex-1 gap-2">
+              <Label htmlFor="class-name" className="flex items-center">
+                Class year{" "}
+                <span className="pl-2">
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Info width={16}></Info>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>
+                          The year of this. It is used to load subject comments.
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </span>
+              </Label>
+              <Input
+                id="class-year"
+                placeholder="Enter class year"
+                value={classYear}
+                onChange={(e) => setClassYear(e.target.value)}
+              />
             </div>
           </div>
           <DialogFooter className="sm:justify-start">

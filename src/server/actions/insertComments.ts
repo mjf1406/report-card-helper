@@ -8,14 +8,14 @@ import type { CommentsDb } from "../db/types";
 
 export type Data = {
     example: object;
-    listening: object;
-    mathematics: object;
-    reading: object;
-    science: object;
-    social_studies: object;
-    speaking: object;
-    use_of_english: object;
-    writing: object;
+    listening: { l1: string, l2: string, l3: string, l4: string, l5: string};
+    mathematics: { l1: string, l2: string, l3: string, l4: string, l5: string};
+    reading: { l1: string, l2: string, l3: string, l4: string, l5: string};
+    science: { l1: string, l2: string, l3: string, l4: string, l5: string};
+    social_studies: { l1: string, l2: string, l3: string, l4: string, l5: string};
+    speaking: { l1: string, l2: string, l3: string, l4: string, l5: string};
+    use_of_english: { l1: string, l2: string, l3: string, l4: string, l5: string};
+    writing: { l1: string, l2: string, l3: string, l4: string, l5: string};
 }
 
 export default async function insertComments(data: Data, semester: string, year: string, classGrade: string) {
@@ -23,14 +23,14 @@ export default async function insertComments(data: Data, semester: string, year:
         grade: classGrade,
         semester: semester,
         year: year,
-        listening: JSON.stringify(data.listening),
-        mathematics: JSON.stringify(data.mathematics),
-        reading: JSON.stringify(data.reading),
-        science: JSON.stringify(data.science),
-        social_studies: JSON.stringify(data.social_studies),
-        speaking: JSON.stringify(data.speaking),
-        use_of_english: JSON.stringify(data.use_of_english),
-        writing: JSON.stringify(data.writing),
+        listening: data.listening,
+        mathematics: data.mathematics,
+        reading: data.reading,
+        science: data.science,
+        social_studies: data.social_studies,
+        speaking: data.speaking,
+        use_of_english: data.use_of_english,
+        writing: data.writing,
     }
     await db.insert(subjectAchievementCommentsTable).values(commentData)
 }

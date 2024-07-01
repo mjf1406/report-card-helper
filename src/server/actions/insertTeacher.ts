@@ -2,9 +2,9 @@
 
 import { db } from "~/server/db/index";
 import { 
-    teachers as teachersTable, 
+    users as usersTable, 
 } from "~/server/db/schema";
-import { type TeacherDb } from "../db/types";
+import { type UserDb } from "../db/types";
 import { clerkClient } from "@clerk/nextjs/server";
 
 export default async function insertTeacher(userId: string) {
@@ -13,13 +13,13 @@ export default async function insertTeacher(userId: string) {
     const userName = `${user.firstName} ${user.lastName}`
     const userEmail = user.emailAddresses.find(i => i.id === user.primaryEmailAddressId)?.emailAddress
 
-    const teacherData: TeacherDb = {
-        teacher_id: userId,
-        teacher_name: userName,
-        teacher_email: String(userEmail),
+    const teacherData: UserDb = {
+        user_id: userId,
+        user_name: userName,
+        user_email: String(userEmail),
+        user_role: 'teacher',
         joined_date: undefined,
         updated_date: undefined,
     }
-    console.log("🚀 ~ insertTeacher ~ teacherData:", teacherData)
-    await db.insert(teachersTable).values(teacherData)
+    await db.insert(usersTable).values(teacherData)
 }

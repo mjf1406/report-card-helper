@@ -11,6 +11,8 @@
 
     /* Strictness */
     "strict": true,
+    // "strict": false,
+    "strictNullChecks": true,
     "noUncheckedIndexedAccess": true,
     "checkJs": true,
 

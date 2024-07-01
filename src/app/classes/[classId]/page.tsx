@@ -7,7 +7,7 @@ import { Loader2, SquarePen, Newspaper, Trash2 } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import Link from "next/link";
 import { databaseClassToCourseMap } from "~/server/actions/getClassById";
-import type { Student, Course } from "~/server/db/types";
+import type { Student, Course, StudentField } from "~/server/db/types";
 import {
   Dialog,
   DialogClose,
@@ -22,6 +22,7 @@ import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { useToast } from "~/components/ui/use-toast";
 import removeStudentFromClass from "~/server/actions/removeStudentFromClass";
+import { Progress } from "~/components/ui/progress";
 
 type Params = {
   classId: string;
@@ -58,10 +59,49 @@ async function fetchStudentRoster(
   }
 }
 
+function countFilledFieldsByStudent(
+  studentFields: StudentField,
+  semester: string,
+) {
+  return Object.values(studentFields).reduce((count, field) => {
+    if (
+      field &&
+      typeof field === "object" &&
+      semester in field &&
+      field?.[semester as keyof typeof field] != ""
+    ) {
+      return count + 1;
+    }
+    return count;
+  }, 0);
+}
+
+function countFilledFieldsByClass(
+  students: Student[],
+  semester: string,
+): number {
+  return students.reduce((count, student) => {
+    // Loop through each field in the student's fields
+    Object.values(student.student_fields).forEach((field) => {
+      // Check if the field exists and is filled for the given semester
+      if (
+        field &&
+        typeof field === "object" &&
+        semester in field &&
+        field?.[semester as keyof typeof field] != ""
+      ) {
+        count += 1;
+      }
+    });
+    return count;
+  }, 0);
+}
+
 export default function ClassDetails({ params }: { params: Params }) {
   const [course, setCourse] = useState<Course>();
   const [students, setStudents] = useState<Student[]>();
   const [isLoading, setIsLoading] = useState(true);
+  const [isError, setError] = useState("");
   const [studentToDelete, setStudentToDelete] = useState<string | undefined>(
     undefined,
   );
@@ -72,6 +112,17 @@ export default function ClassDetails({ params }: { params: Params }) {
   const { toast } = useToast();
 
   const classId = params.classId;
+
+  const percentCompleteS1 = course
+    ? (countFilledFieldsByClass(course?.students, "s1") /
+        (17 * course?.students.length)) *
+      100
+    : null;
+  const percentCompleteS2 = course
+    ? (countFilledFieldsByClass(course?.students, "s2") /
+        (17 * course?.students.length)) *
+      100
+    : null;
 
   useEffect(() => {
     if (!isLoading && course?.students) {
@@ -116,11 +167,36 @@ export default function ClassDetails({ params }: { params: Params }) {
   };
 
   useEffect(() => {
-    void fetchStudentRoster(classId, userId).then((data) => {
-      setCourse(data);
-      setIsLoading(false);
-    });
-  }, [classId, userId]);
+    void fetchStudentRoster(classId, userId)
+      .then((data) => {
+        setCourse(data);
+        setIsLoading(false);
+      })
+      .catch((err) => {
+        const error = err as Error;
+        setError(String(error));
+        toast({
+          title: "Error!",
+          variant: "destructive",
+          description: `${String(error)}`,
+        });
+      });
+  }, [classId, userId, toast]);
+
+  if (isError)
+    return (
+      <>
+        <TopNav />
+        <main className="text-text flex min-h-screen flex-col items-center bg-background">
+          <div className="container flex flex-col items-center gap-12 px-4 py-16">
+            <h1 className="flex flex-col gap-3 text-5xl">
+              <span>Error!</span>
+              <span>{isError}</span>
+            </h1>
+          </div>
+        </main>
+      </>
+    );
 
   return (
     <div>
@@ -135,7 +211,16 @@ export default function ClassDetails({ params }: { params: Params }) {
           ) : (
             <>
               <h1 className="text-5xl">{course?.class_name}</h1>
-
+              <div className="flex w-full max-w-4xl flex-row gap-5">
+                <div className="m-auto w-full">
+                  <Label>Semester 1</Label>
+                  <Progress value={percentCompleteS1} />
+                </div>
+                <div className="m-auto w-full">
+                  <Label>Semester 2</Label>
+                  <Progress value={percentCompleteS2} />
+                </div>
+              </div>
               <div className="m-auto flex w-full flex-1 shrink flex-col items-center justify-center gap-4">
                 {students?.map((student) => (
                   <div
@@ -154,11 +239,23 @@ export default function ClassDetails({ params }: { params: Params }) {
                       <div className="flex flex-1 shrink flex-row gap-2">
                         <div className="flex w-full max-w-[100px] flex-col items-center justify-center rounded-lg bg-foreground/10 px-1 py-1 text-sm">
                           <div>Sem. 1</div>
-                          <div>3 / 17</div>
+                          <div>
+                            {countFilledFieldsByStudent(
+                              student.student_fields,
+                              "s1",
+                            )}{" "}
+                            / 17
+                          </div>
                         </div>
                         <div className="flex w-full max-w-[100px] flex-col items-center justify-center rounded-lg bg-foreground/10 px-1 py-1 text-sm">
                           <div>Sem. 2</div>
-                          <div>0 / 17</div>
+                          <div>
+                            {countFilledFieldsByStudent(
+                              student.student_fields,
+                              "s2",
+                            )}{" "}
+                            / 17
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -186,9 +283,12 @@ export default function ClassDetails({ params }: { params: Params }) {
                             href={{
                               pathname: `/students/${student.student_id}/report`,
                               query: {
-                                student: JSON.stringify(student),
+                                student_id: student.student_id,
+                                student_name: student.student_name_en,
                                 class_name: course?.class_name,
                                 class_id: course?.class_id,
+                                class_year: course?.class_year,
+                                class_grade: course?.class_grade,
                               },
                             }}
                           >

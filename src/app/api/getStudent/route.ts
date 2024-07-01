@@ -1,18 +1,18 @@
 import { type NextRequest, NextResponse } from 'next/server';
-// import { auth } from '@clerk/nextjs/server';
-import { getClassById } from '~/server/actions/getClassById';
+import { auth } from '@clerk/nextjs/server';
+import { getStudent } from '~/server/actions/getStudentById'
 
-export async function GET(req: NextRequest): Promise<NextResponse> {
+// This is the GET handler for the '/api/classes' endpoint
+export async function GET(req: NextRequest) {
   try {
-    const classId: string | null = req.nextUrl.searchParams.get('classId');
-    const userId: string | null = req.nextUrl.searchParams.get('userId');
-    // const { userId } = auth();
-    
+    const { userId } = auth();
     if (!userId) {
       throw new Error('User ID is null');
     }
+    const studentId: string | null = req.nextUrl.searchParams.get('studentId');
+    const classId: string | null = req.nextUrl.searchParams.get('classId');
 
-    const data: unknown = await getClassById(classId!, userId);
+    const data = await getStudent(studentId, classId, userId);
 
     return new NextResponse(JSON.stringify(data), {
       status: 200,
@@ -30,5 +30,4 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     });
   }
 }
-
 

@@ -10,17 +10,13 @@ import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";
 import {
   NavigationMenu,
-  NavigationMenuItem,
   NavigationMenuLink,
-  NavigationMenuList,
-  navigationMenuTriggerStyle,
 } from "~/components/ui/navigation-menu";
 import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
   BreadcrumbList,
-  BreadcrumbPage,
   BreadcrumbSeparator,
 } from "~/components/ui/breadcrumb";
 import {
@@ -92,37 +88,33 @@ const DesktopNav: React.FC<NavProps> = ({ page, course, student }) => {
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <BreadcrumbLink>
-                    <Link
-                      href={{
-                        pathname: `/classes/${course?.class_id}`,
-                        query: {
-                          class_name: course?.class_name,
-                        },
-                      }}
-                    >
-                      {course?.class_name}
-                    </Link>
-                  </BreadcrumbLink>
+                  <Link
+                    href={{
+                      pathname: `/classes/${course?.class_id}`,
+                      query: {
+                        class_name: course?.class_name,
+                      },
+                    }}
+                  >
+                    {course?.class_name}
+                  </Link>
                 </BreadcrumbItem>
                 {student?.student_name ? (
                   <>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
-                      <BreadcrumbLink>
-                        <Link
-                          href={{
-                            pathname: `/students/${student?.student_id}/report`,
-                            query: {
-                              student: JSON.stringify(student),
-                              class_name: course?.class_name,
-                              class_id: course?.class_id,
-                            },
-                          }}
-                        >
-                          {student?.student_name}
-                        </Link>
-                      </BreadcrumbLink>
+                      <Link
+                        href={{
+                          pathname: `/students/${student?.student_id}/report`,
+                          query: {
+                            student: JSON.stringify(student),
+                            class_name: course?.class_name,
+                            class_id: course?.class_id,
+                          },
+                        }}
+                      >
+                        {student?.student_name}
+                      </Link>
                     </BreadcrumbItem>
                   </>
                 ) : (

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import React, { type FC } from "react";
 import {
   Select,
@@ -7,21 +8,25 @@ import {
   SelectValue,
 } from "~/components/ui/select";
 
-/**
- * Custom select component.
- * @param {Object} props - The component props.
- * @param {string} props.placeholder - The placeholder text.
- * @param {Array<{ value: string, label: string | number}>} props.items - The list of select items.
- * @returns {JSX.Element} The custom select component.
- */
 const CustomSelect: FC<{
   placeholder: string;
   items: Array<{ value: string; label: string | number }>;
-}> = ({ placeholder, items }) => {
+  selected: string | undefined;
+  onValueChange: (value: string) => void;
+}> = ({ placeholder, items, selected, onValueChange }) => {
+  const [selectedValue, setSelectedValue] = useState<string | undefined>(
+    String(selected),
+  );
+
+  const handleChange = (value: string) => {
+    setSelectedValue(value);
+    onValueChange(value);
+  };
+
   return (
-    <Select>
+    <Select value={selectedValue} onValueChange={handleChange}>
       <SelectTrigger className="w-[75px]">
-        <SelectValue placeholder={placeholder} />
+        <SelectValue placeholder={""} />
       </SelectTrigger>
       <SelectContent>
         {items.map(({ value, label }) => (

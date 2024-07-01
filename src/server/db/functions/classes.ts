@@ -8,7 +8,7 @@ const getClasses = async (userId: string) => {
             .select()
             .from(classesTable)
             .innerJoin(teacherClassesTable, eq(classesTable.class_id, teacherClassesTable.class_id))
-            .where(sql`${teacherClassesTable.teacher_id} = ${userId}`);
+            .where(sql`${teacherClassesTable.user_id} = ${userId}`);
         return allClasses;
     } catch (error) {
         console.error('Error fetching Reparper classes:', error);

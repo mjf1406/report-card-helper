@@ -13,6 +13,7 @@ import { revalidatePath } from "next/cache";
 
 export type ClassGrade = "1" | "2" | "3" | "4" | "5";
 export type Role = "primary" | "assistant"
+export type UserRole = "teacher" | "admin"
 
 export type Student = {
     student_id: string;
@@ -30,6 +31,7 @@ type ClassData = {
     class_name: string;
     class_language: string;
     class_grade: ClassGrade;
+    class_year: string | undefined;
 }
 
 export type Data = {
@@ -37,13 +39,14 @@ export type Data = {
     class_name: string;
     class_language: string;
     class_grade: ClassGrade;
+    class_year: string | undefined;
     role: Role;
     fileContents: string;
 }
 
 type TeacherClassData = {
     assignment_id: string;
-    teacher_id: string;
+    user_id: string;
     class_id: string;
     role: Role;
 }
@@ -85,13 +88,14 @@ export default async function insertClass(data: Data, userId: string) {
         class_name: data.class_name,
         class_language: data.class_language,
         class_grade: data.class_grade,
+        class_year: data.class_year,
     }
     await db.insert(classesTable).values(classData)
 
     const assignmentId = generateUuidWithPrefix('assignment_')
     const teacherClassData: TeacherClassData = {
         assignment_id: assignmentId,
-        teacher_id: userId,
+        user_id: userId,
         class_id: classId,
         role: data.role,
     }

@@ -4,37 +4,75 @@ This web app creates a frontend for the Younghoon Elementary School report card 
 
 ## To-do List
 
+### p5
+
+- add another way to fill out the reports: a drag-and-drop interface where the user cycles through the inputs. For example, a table with columns representing AB, CD, P, and NY for Responsibility. The user then drags students to their desired column and drops them. It allows the user to easily compare students in their class against each other. Could even provide total counts throughout the grade for each column.
+
 ### p4
 
 - added: next to each subject achievement, there will be 3 graphs: (1) a line graph that shows the current student's history at Younghoon, (2) a bar graph of the distribution of the current class, and (3) a bar graph of the distribution of the whole grade.
+- backend: upgrade errors for users to be more descriptive, like if they are unauthorized
+  - `roster.tsx`
+  - `[classId].tsx`
 
 ### p3
 
-- added: ingested all the data in [the spreadsheet](https://docs.google.com/spreadsheets/d/1nY6fEE1_C9idh2KdKHgh9Dr7T-69v7kdvCFpG91WcyA/edit?usp=sharing) and inserted it into the db
-  - this requires every single student have their own unique id, which it does in the the db, but not in the spreadsheet so there's no way to tell them apart
-- added: created a map to the PDF (must skip the first 2 pages's
 - added: Google refresh token is now handled, prompting the user to reauthorize
-- added: ingested the comments from [2024 Comments S1](https://docs.google.com/document/d/1xXIa8AHNXQWyHHjBBiuycQ7uT5LQPWu3l9NMzGXtj-g/edit?usp=sharing)
 
 ### p2
 
-- added: a way to import all data when creating a class
-- added: a way to export all data for a given class, so it may be imported should anything go wrong
 - added: can now add student(s)
 - added: can now edit a class
 - added: can now edit a student
+- added: a way to import all data when creating a class
+- added: a way to export all data for a given class, so it may be imported should anything go wrong
 
 ### p1
 
-- added: 21st Century Skills (...) now have descriptions for each
+- added: created roles: admin and teacher
+- added: admins can view and edit all classes
+- added: admins can approve student by student and leave notes on things
+- added: admins can export all classes as separate PDFs or a single class when ready
+- added: ingested all the data in [the spreadsheet](https://docs.google.com/spreadsheets/d/1nY6fEE1_C9idh2KdKHgh9Dr7T-69v7kdvCFpG91WcyA/edit?usp=sharing) and inserted it into the db
+  - this requires every single student have their own unique id, which it does in the the db, but not in the spreadsheet so there's no way to tell them apart
 
 ### p0
 
-- added: UI elements update the DB on change on `/report`
-- added: UI elements are set based on student data loaded on `/report`
-- added: semester 1 and semester 2 tasks complete on the student roster page now load the correct numbers
+- added: created a map to the PDF must skip the first 2 pages's
+- added: figured out why the social studies fields are no working
+- backend: need to save the comment to the db because the user can make changes if they want
+- added: ingested the comments from [2024 Comments S1](https://docs.google.com/document/d/1xXIa8AHNXQWyHHjBBiuycQ7uT5LQPWu3l9NMzGXtj-g/edit?usp=sharing)
 
 ## Change Log
+
+2024/07/01
+
+- fixed: subject achievement comment text areas are now mutable
+- fixed: all the typescript errors
+- backend: added user roles and renamed teacher table to users
+- backend: added the subject achievement comments back into the schema
+- fixed: subject achievement comments now load based on the selected value and the data in the DB
+
+2024/06/30
+
+- added: subject achievement comments now load based on the selected value and the data in the DB
+- added: the counts per semester now load the proper numbers
+- backend: only users with access to the class can load the class and student data
+- added: progress bar for the whole class by semester on the class page
+
+2024/06/29
+
+- added: 21st Century Skills (...) now have descriptions for each
+- added: UI elements update the DB on change on `/report`
+- added: semester 1 and semester 2 tasks complete on the student roster page now load the correct numbers
+- added: behavior comment is loaded now based from the DB
+- added: when loading the report page, the window now scrolls to the top
+
+2024/06/26
+
+- added: UI elements are set based on student data loaded on `/report`
+- added: there are now skills and habits comment fields for both semester 1 and semester 2
+- refactored: `report.tsx` has much cleaner code now
 
 2024/06/23
 

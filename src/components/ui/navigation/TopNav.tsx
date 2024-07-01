@@ -40,21 +40,11 @@ function getClassName(
 }
 
 function getStudentName(pathname: string, searchParams: URLSearchParams) {
-  type Params = {
-    student_name_en: string;
-    student_id: string;
-  };
-
   if (pathname.includes("/students/")) {
-    const student = searchParams.get("student");
-    if (student) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const params: Params = JSON.parse(student);
-      return {
-        student_name: params.student_name_en,
-        student_id: params.student_id,
-      };
-    }
+    return {
+      student_name: searchParams.get("student_name") ?? "",
+      student_id: searchParams.get("student_id") ?? "",
+    };
   }
   return {
     student_name: "",

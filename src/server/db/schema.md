@@ -54,12 +54,12 @@
 These tables together will allow you to manage the relationships between teachers, students, and classes efficiently, catering to both the many-to-many relationships and maintaining flexibility for various operations such as enrollments, class assignments, and more. This structure should serve as a robust foundation for your Next.js application using Turso as your database backend.
 
 -- Insert myself as a teacher
-INSERT INTO teachers (teacher_id, teacher_name, teacher_email)
+INSERT INTO teachers (user_id, user_name, user_email)
 VALUES
 ('user_2hJQqqywkygYAjPEoAncvveceXL', 'Michael Fitzgerald','michael.fitzgerald.1406@gmail.com');
 
 -- Inserting data into the Teachers table
-INSERT INTO teachers (teacher_id, teacher_name, teacher_email)
+INSERT INTO teachers (user_id, user_name, user_email)
 VALUES
 (1, 'John Doe', 'johndoe@example.com'),
 (2, 'Jane Smith', 'janesmith@example.com'),
@@ -130,7 +130,7 @@ VALUES
 (20, 10, 2);
 
 -- Inserting data into the TeacherClasses table
-INSERT INTO teacher_classes (assignment_id, teacher_id, class_id, role)
+INSERT INTO teacher_classes (assignment_id, user_id, class_id, role)
 VALUES
 (1, 1, 1, 'primary'),
 (2, 2, 2, 'primary'),
