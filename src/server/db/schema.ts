@@ -30,7 +30,7 @@ export const students = sqliteTable('students',
     {
         student_id: text('student_id').notNull().primaryKey(),
         student_name_en: text('student_name_en').notNull(),
-        student_name_ko: text('student_name_ko').notNull(),
+        student_name_ko: text('student_name_ko'),
         student_sex: text('student_sex', { enum: ["m", "f"] }),
         student_number: integer('student_number', { mode: 'number' }),
         student_email: text('student_email').unique(),
@@ -41,9 +41,10 @@ export const students = sqliteTable('students',
 
 export const subject_achievement_comments = sqliteTable('subject_achievement_comments',
     {
-        grade: text('grade').notNull().primaryKey(),
-        semester: text('semester'),
-        year: text('year'),
+        id: text('id').notNull().primaryKey(),
+        grade: text('grade').notNull(),
+        semester: text('semester').notNull(),
+        year: text('year').notNull(),
         reading: text('reading', { mode: 'json' }).$type<{ l1: string, l2: string, l3: string, l4: string, l5: string }>(), // remember to JSON.parse() this when reading
         writing: text('writing', { mode: 'json' }).$type<{ l1: string, l2: string, l3: string, l4: string, l5: string }>(), // remember to JSON.parse() this when reading
         speaking: text('speaking', { mode: 'json' }).$type<{ l1: string, l2: string, l3: string, l4: string, l5: string }>(), // remember to JSON.parse() this when reading

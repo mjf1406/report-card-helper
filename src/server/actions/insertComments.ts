@@ -5,6 +5,11 @@ import {
     subject_achievement_comments as subjectAchievementCommentsTable
 } from "~/server/db/schema";
 import type { CommentsDb } from "../db/types";
+import { randomUUID } from "crypto";
+
+function generateUuidWithPrefix(prefix: string){
+    return `${prefix}${randomUUID()}`
+}
 
 export type Data = {
     example: object;
@@ -20,6 +25,7 @@ export type Data = {
 
 export default async function insertComments(data: Data, semester: string, year: string, classGrade: string) {
     const commentData: CommentsDb = {
+        id: generateUuidWithPrefix('subjectComments_'),
         grade: classGrade,
         semester: semester,
         year: year,

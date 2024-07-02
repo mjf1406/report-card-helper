@@ -8,6 +8,7 @@ export type UserDb = {
     updated_date: string | undefined;
 }
 export type CommentsDb = {
+    id: string,
     grade: string;
     semester: string;
     year: string;

@@ -18,7 +18,7 @@ export type UserRole = "teacher" | "admin"
 export type Student = {
     student_id: string;
     student_name_en: string;
-    student_name_ko: string;
+    student_name_ko: string | undefined;
     student_sex: "m" | "f" | null;
     student_number: number | null;
     student_email: string | null;
@@ -104,7 +104,7 @@ export default async function insertClass(data: Data, userId: string) {
     const studentsJson = csvToJson(data.fileContents)
     const studentsData: Student[] = [];
     for (const student of studentsJson) {
-        if (!student.name_en || !student.name_ko) {
+        if (!student.name_en) {
             console.warn(`Skipping student due to missing required field: ${JSON.stringify(student)}`);
             continue
         }

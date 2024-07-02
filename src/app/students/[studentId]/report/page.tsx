@@ -372,7 +372,6 @@ export default function StudentReport({
   const { toast } = useToast();
   const { userId } = useAuth();
   const [studentFields, setFields] = useState<StudentField>();
-  console.log("🚀 ~ studentFields:", studentFields);
   const [student, setStudent] = useState<Student>();
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setError] = useState("");
@@ -445,7 +444,6 @@ export default function StudentReport({
           [semester]: value,
         },
       };
-      console.log("🚀 ~ setFields ~ updatedFields:", updatedFields);
 
       // Call updateStudentField here, inside the setState callback
       updateStudentField(updatedFields)

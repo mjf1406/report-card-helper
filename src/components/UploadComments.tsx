@@ -24,9 +24,12 @@ import { Label } from "~/components/ui/label";
 import { useAuth } from "@clerk/nextjs";
 import React, { useState } from "react";
 import { useToast } from "~/components/ui/use-toast";
+import { ToastAction } from "~/components/ui/toast";
 import Link from "next/link";
 import insertComments from "~/server/actions/insertComments";
 import type { Data } from "~/server/actions/insertComments";
+import type { CommentsDb } from "~/server/db/types";
+import { deleteSubjectCommentById } from "~/server/actions/deleteSubjectCommentById";
 
 function parseCSV(csv: string): string[][] {
   const rows: string[][] = [];
@@ -114,7 +117,40 @@ const validateSubject = (subject: Record<string, string | null>): boolean => {
   );
 };
 
-export default function NewClassDialog() {
+async function fetchCommentsByGradeYearSemester(
+  userId: string | null | undefined,
+  grade: string,
+  year: string,
+  semester: string,
+): Promise<CommentsDb | null> {
+  try {
+    const url = new URL(
+      "/api/getCommentsByGradeYearSemester",
+      window.location.origin,
+    );
+    url.searchParams.append("userId", String(userId));
+    url.searchParams.append("grade", grade);
+    url.searchParams.append("year", year);
+    url.searchParams.append("semester", semester);
+
+    const response = await fetch(url.toString());
+    if (!response.ok) {
+      console.error("Failed to fetch student roster");
+      throw new Error("Failed to fetch student roster");
+    }
+    const text: string = await response.text();
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const data: CommentsDb[] = JSON.parse(text);
+    if (!data) return null;
+    return data[0]!;
+  } catch (err) {
+    const error = err as Error;
+    console.error("failed to parse course", error);
+    throw new Error("failed to parse course");
+  }
+}
+
+export default function UploadCommentsDialog() {
   const { userId } = useAuth();
   const [classGrade, setClassGrade] = useState("");
   const [semester, setSemester] = useState("");
@@ -175,6 +211,49 @@ export default function NewClassDialog() {
 
     reader.readAsText(file);
   };
+
+  const uploadComments = async (
+    confirmed: boolean,
+    commentToDelete: string | null,
+  ) => {
+    if (confirmed && commentToDelete) {
+      await deleteSubjectCommentById(userId, commentToDelete);
+    }
+    if (!file) {
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = async function (event) {
+      if (!event?.target?.result) {
+        console.error("FileReader result is null");
+        return;
+      }
+      const text = event.target.result as string;
+      const data = parseCSV(text);
+      const json = transformData(data);
+
+      try {
+        setLoading(true);
+        await insertComments(json as Data, semester, year, classGrade);
+        setOpen(false);
+        toast({
+          title: "Comments uploaded!",
+          description: `The comments were successfully uploaded.`,
+        });
+        setLoading(false);
+      } catch (error) {
+        setLoading(false);
+        console.error("Failed to upload comments:", error);
+        toast({
+          variant: "destructive",
+          title: "Failed to upload the comments!",
+          description: "Please try again.",
+        });
+      }
+    };
+    reader.readAsText(file);
+  };
+
   const handleUpload = async () => {
     if (!isCsvValid) {
       const errorMsg =
@@ -201,36 +280,34 @@ export default function NewClassDialog() {
     if (!year) {
       return alert("input a year.");
     }
+    const existingComments: CommentsDb | null =
+      await fetchCommentsByGradeYearSemester(
+        userId,
+        classGrade,
+        year,
+        semester,
+      );
 
-    const reader = new FileReader();
-    reader.onload = async function (event) {
-      if (!event?.target?.result) {
-        console.error("FileReader result is null");
-        return;
-      }
-      const text = event.target.result as string;
-      const data = parseCSV(text);
-      const json = transformData(data);
-
-      try {
-        setLoading(true);
-        await insertComments(json as Data, semester, year, classGrade);
-        setOpen(false);
-        toast({
-          title: "Comments uploaded!",
-          description: `The comments were successfully uploaded.`,
-        });
-      } catch (error) {
-        setLoading(false);
-        console.error("Failed to upload comments:", error);
-        toast({
-          variant: "destructive",
-          title: "Failed to upload the comments!",
-          description: "Please try again.",
-        });
-      }
-    };
-    reader.readAsText(file);
+    if (existingComments) {
+      toast({
+        variant: "destructive",
+        title: `Grade ${classGrade} (${year}, S${semester}) Subject Comments already exist!`,
+        description: `Uploading these comments will permanently overwrite the old comments. This actions is irreversible!`,
+        action: (
+          <div className="m-auto flex w-full flex-col gap-2">
+            <Button
+              className="bg-foreground"
+              onClick={() => uploadComments(true, existingComments.id)}
+            >
+              Upload
+            </Button>
+            <ToastAction altText="cancel">Cancel</ToastAction>
+          </div>
+        ),
+      });
+      return;
+    }
+    await uploadComments(false, null);
   };
 
   return (

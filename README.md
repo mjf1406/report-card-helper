@@ -40,10 +40,20 @@ This web app creates a frontend for the Younghoon Elementary School report card 
 
 - added: created a map to the PDF must skip the first 2 pages's
 - added: figured out why the social studies fields are no working
+- backend: when a user signs up, a demo class is added to their account
 - backend: need to save the comment to the db because the user can make changes if they want
-- added: ingested the comments from [2024 Comments S1](https://docs.google.com/document/d/1xXIa8AHNXQWyHHjBBiuycQ7uT5LQPWu3l9NMzGXtj-g/edit?usp=sharing)
+  - this requires some logic that only pulls from the grade comments if there is no comment saved in StudentFields
+  - also, as soon as the value is set for the subject, the subject value and its comment must be saved to the db
+  - finally, the comment should be saved when the cursor leaves the textfield, when it's no longer in focus
 
 ## Change Log
+
+2024/07/02
+
+- added: user is now alerted when uploading comments if comments already exist and questioned whether they want to overwrite them.
+- added: ingested the comments from [2024 Comments S1](https://docs.google.com/document/d/1xXIa8AHNXQWyHHjBBiuycQ7uT5LQPWu3l9NMzGXtj-g/edit?usp=sharing)
+  - writing is still missing
+- fixed: if the name_ko name is blank, the class no longer fails to be created. This was caused by the field being set to .notNull() in Drizzle
 
 2024/07/01
 
