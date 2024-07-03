@@ -8,12 +8,16 @@ export default function Classes() {
   return (
     <div>
       <TopNav />
-      <main className="flex min-h-screen flex-col items-center bg-background text-text">
+      <main className="text-text flex min-h-screen flex-col items-center bg-background">
         <div className="container flex flex-col items-center gap-12 px-4 py-16 ">
           <div>
             <h1 className="text-5xl">My Classes</h1>
           </div>
           <NewClassDialog />
+          <div className="text-center text-base">
+            ⚠️ The &quot;Download Reports&quot; button only appears once you
+            have completed all fields for a semester. ⚠️
+          </div>
           <ClassList />
         </div>
       </main>

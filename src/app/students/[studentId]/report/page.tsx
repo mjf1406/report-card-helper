@@ -138,15 +138,6 @@ const subjectAchievementOptions = [
   { value: "5", label: "5" },
 ]; // This value fetches the Strengths/Next Steps for Improvement
 
-// function generateSkill(): string {
-//   const options = ["AB", "CD", "P", "NY"];
-//   const randomIndex = Math.floor(Math.random() * options.length);
-//   return options[randomIndex];
-// }
-// function generateSubjectAchievementScore(): number {
-//   return Math.floor(Math.random() * 5) + 1;
-// }
-
 async function fetchStudent(
   studentId: string,
   classId: string,
@@ -239,7 +230,7 @@ async function fetchSubjectComments(
 
 type ParsedComment = Record<string, string>;
 
-function getSubjectCommentBySubjectAndSemester(
+function filterSubjectCommentBySubjectAndSemester(
   comments: CommentsDb[] | undefined,
   subject: string,
   sem: string,
@@ -575,21 +566,33 @@ export default function StudentReport({
               <h2 className="text-2xl">Skills and Habits Comment</h2>
               <div className="flex w-full max-w-5xl flex-wrap justify-center gap-5">
                 <div className="m-auto h-full max-w-lg grow space-y-6">
-                  <div className="text-xl">Semester 1</div>
+                  <div className="text-xl">
+                    Semester 1
+                    <div className="text-xs">
+                      Please click outside of the textbox to save the comment.
+                    </div>
+                  </div>
+
                   <Textarea
                     className="m-auto h-full w-full"
                     placeholder="Skill and Habits comment. I recommend you write this in Google Docs, then copy it over."
-                    value={studentFields?.comment?.s1}
-                    onChange={(event) =>
+                    defaultValue={studentFields?.comment?.s1}
+                    onBlur={(event) =>
                       handleValueChange("comment", "s1", event.target.value)
                     }
                   />
-                  <div className="text-xl">Semester 2</div>
+                  <div className="text-xl">
+                    Semester 2
+                    <div className="text-xs">
+                      Please click outside of the textbox to save the comment.
+                    </div>
+                  </div>
+
                   <Textarea
                     className="m-auto h-full w-full"
                     placeholder="Skill and Habits comment. I recommend you write this in Google Docs, then copy it over."
-                    value={studentFields?.comment?.s2}
-                    onChange={(event) =>
+                    defaultValue={studentFields?.comment?.s2}
+                    onBlur={(event) =>
                       handleValueChange("comment", "s2", event.target.value)
                     }
                   />
@@ -652,13 +655,13 @@ export default function StudentReport({
                     const s1value = values?.s1;
                     const s2value = values?.s2;
 
-                    const s1Comment = getSubjectCommentBySubjectAndSemester(
+                    const s1Comment = filterSubjectCommentBySubjectAndSemester(
                       comments,
                       fieldKey,
                       "1",
                       s1value,
                     );
-                    const s2Comment = getSubjectCommentBySubjectAndSemester(
+                    const s2Comment = filterSubjectCommentBySubjectAndSemester(
                       comments,
                       fieldKey,
                       "2",
@@ -688,12 +691,30 @@ export default function StudentReport({
                             className="text-3xs m-auto h-fit w-full"
                             placeholder="Select an option in the dropdown to load the comment..."
                             defaultValue={s1Comment}
+                            disabled={true}
+                            // onChange={(event) =>
+                            //   handleValueChange(
+                            //     fieldKey,
+                            //     "s1",
+                            //     event.target.value,
+                            //     true,
+                            //   )
+                            // }
                           />
                           <Label>S2</Label>
                           <Textarea
                             className="text-3xs m-auto h-fit w-full"
                             placeholder="Select an option in the dropdown to load the comment..."
                             defaultValue={s2Comment}
+                            disabled={true}
+                            // onChange={(event) =>
+                            //   handleValueChange(
+                            //     fieldKey,
+                            //     "s2",
+                            //     event.target.value,
+                            //     true,
+                            //   )
+                            // }
                           />
                         </div>
                       </div>

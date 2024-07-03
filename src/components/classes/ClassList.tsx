@@ -27,6 +27,7 @@ type Data = {
     class_name: string;
     class_language: string;
     class_grade: string;
+    class_year: string;
     created_date: string;
     updated_date: string;
     complete: boolean;
@@ -47,6 +48,7 @@ export async function databaseClassesToCourseMap(
       class_name: element.classes.class_name,
       class_language: element.classes.class_language,
       class_grade: element.classes.class_grade,
+      class_year: element.classes.class_year,
       created_date: element.classes.created_date,
       updated_date: element.classes.updated_date,
       assigned_date: element.teacher_classes.assigned_date,
@@ -156,7 +158,7 @@ export default function ClassList() {
           >
             <div className="flex flex-1 flex-col justify-center self-start">
               <div className="text-base font-bold lg:text-xl">
-                {course.class_name}
+                {`${course.class_name} (${course.class_year})`}
               </div>
               <div className="text-sm italic lg:text-sm">
                 {course.role} teacher
@@ -165,7 +167,7 @@ export default function ClassList() {
             </div>
             <div className="m-auto flex h-full flex-1 items-end justify-end gap-2 self-end">
               {course.complete ? (
-                <Button>
+                <Button variant={"secondary"}>
                   <Download className="mr-2 h-4 w-4" />
                   Download Reports
                 </Button>

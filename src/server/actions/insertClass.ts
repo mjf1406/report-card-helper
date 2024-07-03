@@ -58,6 +58,7 @@ function generateUuidWithPrefix(prefix: string){
 }
 
 function csvToJson(csvString: string): CSVStudent[] {
+    console.log("🚀 ~ csvToJson ~ csvString:", csvString)
     const lines = csvString.split('\n');
     const result: CSVStudent[] = [];
     const headers = lines[0]?.split(',') ?? [];

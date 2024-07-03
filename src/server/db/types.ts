@@ -52,6 +52,7 @@ export type TeacherCourse = {
     class_name: string;
     class_language: string;
     class_grade: string;
+    class_year: string;
     created_date: string;
     updated_date: string;
     assigned_date: string;
