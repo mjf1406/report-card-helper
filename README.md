@@ -6,14 +6,14 @@ This web app creates a frontend for the Younghoon Elementary School report card 
 
 ### p5
 
-- add another way to fill out the reports: a drag-and-drop interface where the user cycles through the inputs. For example, a table with columns representing AB, CD, P, and NY for Responsibility. The user then drags students to their desired column and drops them. It allows the user to easily compare students in their class against each other. Could even provide total counts throughout the grade for each column.
-
-### p4
-
 - backend: need to save the comment to the db because the user can make changes if they want
   - this requires some logic that only pulls from the grade comments if there is no comment saved in StudentFields
   - also, as soon as the value is set for the subject, the subject value and its comment must be saved to the db
   - finally, the comment should be saved when the cursor leaves the textfield, when it's no longer in focus
+- add another way to fill out the reports: a drag-and-drop interface where the user cycles through the inputs. For example, a table with columns representing AB, CD, P, and NY for Responsibility. The user then drags students to their desired column and drops them. It allows the user to easily compare students in their class against each other. Could even provide total counts throughout the grade for each column.
+
+### p4
+
 - added: next to each subject achievement, there will be 3 graphs: (1) a line graph that shows the current student's history at Younghoon, (2) a bar graph of the distribution of the current class, and (3) a bar graph of the distribution of the whole grade.
 - backend: upgrade errors for users to be more descriptive, like if they are unauthorized
   - `roster.tsx`
@@ -44,10 +44,14 @@ This web app creates a frontend for the Younghoon Elementary School report card 
 
 - added: created a map to the PDF must skip the first 2 pages's
 - added: figured out why the social studies fields are not working
-- backend: when a user signs up, demo classes are added to their account, see `webhooks/route.ts`
-- fixed: the classes page waits for the demo classes to be inserted before loading for the first time on user sign up
+- fixed: the classes page loads after the demo classes are added or the page is refreshed once the demo classes are added
+- backend: need to set a semester complete in classesTable when it happens
 
 ## Change Log
+
+2024/07/04
+
+- backend: when a user signs up, demo classes are added to their account, see `webhooks/route.ts`
 
 2024/07/03
 

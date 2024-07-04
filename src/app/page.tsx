@@ -54,7 +54,7 @@ export default function HomePage() {
             </a>
             , my favorite fruit 🥑!
           </div>
-          <div className="m-auto flex w-full items-center justify-center">
+          <div className="m-auto flex w-full items-center justify-center gap-5">
             {isLoading ? (
               <Button disabled>
                 <Loader2 className="mr-2 h-6 w-6 animate-spin" />
@@ -65,9 +65,9 @@ export default function HomePage() {
                 <Link href={`/classes`}>My classes</Link>
               </Button>
             )}
-          </div>
-          <div className="m-auto flex w-full items-center justify-center">
+            {/* <div className="m-auto flex w-full items-center justify-center"> */}
             <UploadComments />
+            {/* </div> */}
           </div>
         </div>
         <div className="mb-20">

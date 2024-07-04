@@ -42,13 +42,7 @@ const getClassById = async (classId: string, userId: string | undefined) => {
         throw new Error('Failed to fetch class.');
     }
 }
-  
-/**
- * Converts database data to a strongly typed Course object.
- * 
- * @param data - Object containing class, students, and studentFields arrays.
- * @returns A Course object with strongly typed properties.
- */
+
 async function databaseClassToCourseMap(
     data: {
     class: {
@@ -63,7 +57,10 @@ async function databaseClassToCourseMap(
             created_date: string | undefined,
             updated_date: string | undefined,
             class_grade: string | undefined,
-            complete: boolean | undefined,
+            complete: {
+                s1: boolean,
+                s2: boolean
+            };
         },
         classes: {
             assigned_date: string | undefined,
@@ -77,7 +74,10 @@ async function databaseClassToCourseMap(
             created_date: string | undefined,
             updated_date: string | undefined,
             class_grade: string | undefined,
-            complete: boolean | undefined,
+            complete: {
+                s1: boolean,
+                s2: boolean
+            };
         },
         users: {
             user_name: string | undefined,
@@ -216,7 +216,7 @@ async function databaseClassToCourseMap(
         class_grade: data?.class[0]?.classes.class_grade,
         created_date: data?.class[0]?.classes.created_date,
         updated_date: data?.class[0]?.classes.updated_date,
-        complete: data?.class[0]?.classes.complete,
+        complete: data?.class[0]?.classes.complete ? data?.class[0]?.classes.complete : { s1: false, s2: false },
         teachers: teachers,
         students: students,
     };

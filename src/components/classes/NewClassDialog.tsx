@@ -161,7 +161,7 @@ export default function NewClassDialog() {
 
       try {
         setLoading(true);
-        await insertClass(newClass, userId);
+        await insertClass(newClass, userId, false);
         setOpen(false);
         toast({
           title: "Class created successfully!",

@@ -33,7 +33,10 @@ export type Course = {
     created_date: string | undefined;
     students: Student[];
     teachers: Teacher[];
-    complete: boolean | undefined;
+    complete: {
+        s1: boolean,
+        s2: boolean
+    };
 }
 
 export type Teacher = {
@@ -57,7 +60,10 @@ export type TeacherCourse = {
     updated_date: string;
     assigned_date: string;
     role: string;
-    complete: boolean;
+    complete: {
+        s1: boolean,
+        s2: boolean
+    };
   }
 
 export type Student = {

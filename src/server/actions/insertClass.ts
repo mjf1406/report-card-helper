@@ -32,6 +32,10 @@ type ClassData = {
     class_language: string;
     class_grade: ClassGrade;
     class_year: string | undefined;
+    complete: {
+        s1: boolean,
+        s2: boolean
+    };
 }
 
 export type Data = {
@@ -49,6 +53,11 @@ type TeacherClassData = {
     user_id: string;
     class_id: string;
     role: Role;
+}
+
+export type StudentId = {
+    sid: string,
+    fid: string
 }
 
 export type CSVStudent = Record<string, string | undefined>;
@@ -79,7 +88,7 @@ function csvToJson(csvString: string): CSVStudent[] {
     return result;
   }
 
-export default async function insertClass(data: Data, userId: string) {
+export default async function insertClass(data: Data, userId: string, complete: boolean | undefined | null) {
 
     if (data.class_language === null || data.class_language === undefined || data.class_language === '') data.class_language = 'en-US'
 
@@ -90,6 +99,7 @@ export default async function insertClass(data: Data, userId: string) {
         class_language: data.class_language,
         class_grade: data.class_grade,
         class_year: data.class_year,
+        complete: (complete) ? { s1: true, s2: true } : { s1: false, s2: false }
     }
     await db.insert(classesTable).values(classData)
 
@@ -104,13 +114,27 @@ export default async function insertClass(data: Data, userId: string) {
 
     const studentsJson = csvToJson(data.fileContents)
     const studentsData: Student[] = [];
+    const studentFieldData = []
+    const studentClassesData = []
+    const studentIds: object[] = []
+    
     for (const student of studentsJson) {
         if (!student.name_en) {
             console.warn(`Skipping student due to missing required field: ${JSON.stringify(student)}`);
             continue
         }
+        
+        const fieldId = generateUuidWithPrefix('field_')
+        const studentId = generateUuidWithPrefix('student_')
+        const enrollmentId = generateUuidWithPrefix('enrollment_')
+
+        studentIds.push({
+            sid: studentId,
+            fid: fieldId,
+        })
+
         const stud: Student = {
-            student_id: generateUuidWithPrefix('student_'),
+            student_id: studentId,
             student_name_en: student.name_en,
             student_name_ko: student.name_ko,
             student_sex: (student.sex === "m" || student.sex === "f") ? student.sex : null,
@@ -118,28 +142,23 @@ export default async function insertClass(data: Data, userId: string) {
             student_email: student.email ?? null,
         };
         studentsData.push(stud)
-    }
-    await db.insert(studentsTable).values(studentsData)
- 
-    const studentClassesData = []
-    for (const student of studentsData) {
-        const stud = {
-            enrollment_id: generateUuidWithPrefix('enrollment_'),
-            student_id: student.student_id,
+
+        const studf = {
+            field_id: fieldId,
+            student_id: studentId,
+        }
+        studentFieldData.push(studf)
+
+        const studc = {
+            enrollment_id: enrollmentId,
+            student_id: studentId,
             class_id: classId
         }
-        studentClassesData.push(stud)
+        studentClassesData.push(studc)
     }
+    await db.insert(studentsTable).values(studentsData)
     await db.insert(studentClassesTable).values(studentClassesData)
-
-    const studentFieldData = []
-    for (const student of studentsData) {
-        const stud = {
-            field_id: generateUuidWithPrefix('field_'),
-            student_id: student.student_id,
-        }
-        studentFieldData.push(stud)
-    }
     await db.insert(studentFieldTable).values(studentFieldData)
     revalidatePath("/classes");
+    return JSON.stringify(studentIds)
 }

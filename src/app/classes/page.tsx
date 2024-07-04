@@ -15,8 +15,8 @@ export default function Classes() {
           </div>
           <NewClassDialog />
           <div className="text-center text-base">
-            ⚠️ The &quot;Download Reports&quot; button only appears once you
-            have completed all fields for a semester. ⚠️
+            ⚠️ The &quot;Sx&quot; buttons only appear once you have completed
+            all fields for a semester. ⚠️
           </div>
           <ClassList />
         </div>

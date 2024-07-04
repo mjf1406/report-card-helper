@@ -40,68 +40,17 @@ const skillToFieldKeyMap: Record<
   "Social Studies": "social_studies",
   Science: "science",
 };
-
 type stud = {
   student_name_en: string | undefined;
   student_number: string | undefined;
 };
-
 type TransformedData = {
   student_fields: StudentField;
   student: stud;
 };
-
 type Data = {
   students: Student;
   student_fields: StudentField;
-};
-
-const studentLetters: string[] = [
-  "b",
-  "c",
-  "d",
-  "e",
-  "f",
-  "g",
-  "h",
-  "i",
-  "j",
-  "k",
-  "l",
-  "m",
-  "n",
-  "o",
-  "p",
-];
-
-const prefixes = {
-  // the below just use the student letter
-  // e.g. if it's student b, then it would be
-  // Student b
-  student_name: "Student ", // Student ${studentLetter}
-  student_number: "number ",
-  // the below use the letter once and the semester number
-  // e.g. if the semester is 1 for student b, then it would be
-  // Res1b
-  responsibility: "Res", // Res${semesterNumber}${studentLetter}
-  organization: "Or",
-  collaboration: "co",
-  communication: "Com",
-  thinking: "thin",
-  inquiry: "inqu",
-  risk_taking: "ref",
-  open_minded: "rt",
-  // the below use the letter twice
-  // e.g. if the letter is b, then it would be
-  // Reading Textbb
-  reading: "Reading Text", // Reading Text${studentLetter}${studentLetter}
-  writing: "Writing Text",
-  speaking: "Speaking Text",
-  listening: "Listening Text",
-  use_of_english: "Use of English Text",
-  mathematics: "math Text",
-  social_studies: "S Text",
-  science: "SciText",
 };
 
 const twentyFirstCenturySkillsItems = [
@@ -227,9 +176,6 @@ async function fetchSubjectComments(
     throw new Error("failed to parse course");
   }
 }
-
-type ParsedComment = Record<string, string>;
-
 function filterSubjectCommentBySubjectAndSemester(
   comments: CommentsDb[] | undefined,
   subject: string,
@@ -242,116 +188,6 @@ function filterSubjectCommentBySubjectAndSemester(
   if (!raw) return "";
   return raw?.[`l${level}` as keyof typeof raw] as string;
 }
-// export async function printPDF() {
-//   const formUrl =
-//     "https://utfs.io/f/5234b4e8-92e5-4934-bc32-2fe376e43760-1javl8.pdf";
-//   const formPdfBytes = await fetch(formUrl).then((res) => res.arrayBuffer());
-//   const pdfDoc = await PDFDocument.load(formPdfBytes);
-//   const form = pdfDoc.getForm();
-
-//   const codeField = form.getTextField("Code");
-//   codeField.setFontSize(8);
-
-//   for (const studentLetter of studentLetters) {
-//     const prefixArray = Object.entries(prefixes).map(([key, value]) => ({
-//       name: key,
-//       prefix: value,
-//     }));
-//     for (const element of prefixArray) {
-//       const name = element?.name;
-//       const prefix = element?.prefix;
-//       if (!prefix.includes("Text")) continue;
-//       const fieldName = `${element?.prefix}${studentLetter}${studentLetter}`;
-//       const field = form.getTextField(fieldName);
-//       field.setText(
-//         "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-//       );
-//     }
-//   }
-
-//   // form.flatten();
-//   const pdfBytes = await pdfDoc.save();
-
-//   const blob = new Blob([pdfBytes], { type: "application/pdf" });
-//   const link = document.createElement("a");
-//   link.href = window.URL.createObjectURL(blob);
-//   link.download = "updated-document.pdf";
-//   link.click();
-//   window.URL.revokeObjectURL(link.href);
-// }
-
-// const newFields: StudentField = JSON.stringify({
-//   field_id: undefined,
-//   collaboration: {
-//     s1: generateSkill(),
-//     s2: generateSkill(),
-//   },
-//   communication: {
-//     s1: generateSkill(),
-//     s2: generateSkill(),
-//   },
-//   inquiry: {
-//     s1: generateSkill(),
-//     s2: generateSkill(),
-//   },
-//   listening: {
-//     s1: generateSubjectAchievementScore(),
-//     s2: generateSubjectAchievementScore(),
-//   },
-//   mathematics: {
-//     s1: generateSubjectAchievementScore(),
-//     s2: generateSubjectAchievementScore(),
-//   },
-//   open_minded: {
-//     s1: generateSkill(),
-//     s2: generateSkill(),
-//   },
-//   organization: {
-//     s1: generateSkill(),
-//     s2: generateSkill(),
-//   },
-//   reading: {
-//     s1: generateSubjectAchievementScore(),
-//     s2: generateSubjectAchievementScore(),
-//   },
-//   responsibility: {
-//     s1: generateSkill(),
-//     s2: generateSkill(),
-//   },
-//   risk_taking: {
-//     s1: generateSkill(),
-//     s2: generateSkill(),
-//   },
-//   science: {
-//     s1: generateSubjectAchievementScore(),
-//     s2: generateSubjectAchievementScore(),
-//   },
-//   skills_and_habits: {
-//     s1: generateSubjectAchievementScore(),
-//     s2: generateSubjectAchievementScore(),
-//   },
-//   social_studies: {
-//     s1: generateSubjectAchievementScore(),
-//     s2: generateSubjectAchievementScore(),
-//   },
-//   speaking: {
-//     s1: generateSubjectAchievementScore(),
-//     s2: generateSubjectAchievementScore(),
-//   },
-//   thinking: {
-//     s1: generateSkill(),
-//     s2: generateSkill(),
-//   },
-//   use_of_english: {
-//     s1: generateSubjectAchievementScore(),
-//     s2: generateSubjectAchievementScore(),
-//   },
-//   writing: {
-//     s1: generateSubjectAchievementScore(),
-//     s2: generateSubjectAchievementScore(),
-//   },
-//   comment: { s1: "Semester 1", s2: "Semester 2" },
-// }); // TODO: comment out when building
 
 export default function StudentReport({
   params,

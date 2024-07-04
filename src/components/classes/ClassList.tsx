@@ -20,6 +20,7 @@ import {
 } from "~/components/ui/dialog";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
+import { downloadReportsBySemester } from "~/server/actions/downloadReportsBySemester";
 
 type Data = {
   classes: {
@@ -30,7 +31,10 @@ type Data = {
     class_year: string;
     created_date: string;
     updated_date: string;
-    complete: boolean;
+    complete: {
+      s1: boolean;
+      s2: boolean;
+    };
   };
   teacher_classes: {
     assigned_date: string;
@@ -78,6 +82,7 @@ async function fetchClassroomData(): Promise<TeacherCourse[]> {
 
 export default function ClassList() {
   const [courses, setCourses] = useState<TeacherCourse[]>([]);
+  console.log("🚀 ~ ClassList ~ courses:", courses);
   const [isLoading, setIsLoading] = useState(true);
   const [courseToDelete, setCourseToDelete] = useState<string | null>(null);
   const [deleteCourseText, setDeleteCourseText] = useState("");
@@ -166,11 +171,31 @@ export default function ClassList() {
               <div className="text-sm italic">grade {course.class_grade}</div>
             </div>
             <div className="m-auto flex h-full flex-1 items-end justify-end gap-2 self-end">
-              {course.complete ? (
-                <Button variant={"secondary"}>
-                  <Download className="mr-2 h-4 w-4" />
-                  Download Reports
-                </Button>
+              {course.complete.s1 || course.complete.s2 ? (
+                <>
+                  {course.complete.s1 && (
+                    <Button
+                      variant="secondary"
+                      onClick={() =>
+                        downloadReportsBySemester(course.class_id, "s1")
+                      }
+                    >
+                      <Download className="mr-2 h-4 w-4" />
+                      S1
+                    </Button>
+                  )}
+                  {course.complete.s2 && (
+                    <Button
+                      variant="secondary"
+                      onClick={() =>
+                        downloadReportsBySemester(course.class_id, "s2")
+                      }
+                    >
+                      <Download className="mr-2 h-4 w-4" />
+                      S2
+                    </Button>
+                  )}
+                </>
               ) : (
                 <></>
               )}

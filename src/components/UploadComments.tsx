@@ -314,7 +314,7 @@ export default function UploadCommentsDialog() {
     <>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <Button>
+          <Button variant={"secondary"}>
             <span className="pr-2">
               <Upload />{" "}
             </span>

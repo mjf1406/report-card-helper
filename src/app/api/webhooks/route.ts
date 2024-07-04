@@ -5,6 +5,12 @@ import { headers } from 'next/headers'
 import { type WebhookEvent } from '@clerk/nextjs/server'
 import insertTeacher from '~/server/actions/insertTeacher'
 import insertClass, { type Data } from '~/server/actions/insertClass'
+import { revalidatePath } from 'next/cache'
+import { NextResponse } from 'next/server'
+import type { StudentField } from '~/server/db/types'
+import { LoremIpsum } from "lorem-ipsum";
+import type { StudentId } from '~/server/actions/insertClass'
+import updateStudentField from '~/server/actions/updateStudentField'
 
 interface UserCreatedEventData {
   id: string;
@@ -12,14 +18,135 @@ interface UserCreatedEventData {
 interface EventData {
   id?: string;
 }
-
-function generateSkill(): string {
-  const options = ["AB", "CD", "P", "NY"];
-  const randomIndex = Math.floor(Math.random() * options.length);
+const lorem = new LoremIpsum({
+  sentencesPerParagraph: {
+    max: 8,
+    min: 4
+  },
+  wordsPerSentence: {
+    max: 16,
+    min: 4
+  }
+});
+function generateSkill(complete: boolean): string {
+  const options = ["", "", "", "", "AB", "CD", "P", "NY"];
+  let randomIndex
+  if (complete) {
+    randomIndex = Math.floor(Math.random() * options.length);
+    while (randomIndex === 0 || randomIndex === 1 || randomIndex === 2 || randomIndex === 3) {
+      randomIndex = Math.floor(Math.random() * options.length);
+    }
+  } else randomIndex = Math.floor(Math.random() * options.length);
   return String(options[randomIndex]);
 }
-function generateSubjectAchievementScore(): number {
-  return Math.floor(Math.random() * 5) + 1;
+function generateSubjectAchievementScore(complete: boolean): string {
+  const options = ["", "", "", "", "1", "2", "3", "4", "5"];
+  let randomIndex
+  if (complete) {
+    randomIndex = Math.floor(Math.random() * options.length);
+    while (randomIndex === 0 || randomIndex === 1 || randomIndex === 2 || randomIndex === 3) {
+      randomIndex = Math.floor(Math.random() * options.length);
+    }
+  } else randomIndex = Math.floor(Math.random() * options.length);
+  return String(options[randomIndex]);
+}
+function generateFields(complete: boolean): StudentField {
+  return {
+    field_id: "",
+    student_id: "",
+    collaboration: {
+      s1: generateSkill(complete),
+      s2: generateSkill(complete),
+    },
+    communication: {
+      s1: generateSkill(complete),
+      s2: generateSkill(complete),
+    },
+    inquiry: {
+      s1: generateSkill(complete),
+      s2: generateSkill(complete),
+    },
+    listening: {
+      s1: generateSubjectAchievementScore(complete),
+      s2: generateSubjectAchievementScore(complete),
+      s1_comment: "",
+      s2_comment: ""
+    },
+    mathematics: {
+      s1: generateSubjectAchievementScore(complete),
+      s2: generateSubjectAchievementScore(complete),
+      s1_comment: "",
+      s2_comment: ""
+    },
+    open_minded: {
+      s1: generateSkill(complete),
+      s2: generateSkill(complete),
+    },
+    organization: {
+      s1: generateSkill(complete),
+      s2: generateSkill(complete),
+    },
+    reading: {
+      s1: generateSubjectAchievementScore(complete),
+      s2: generateSubjectAchievementScore(complete),
+      s1_comment: "",
+      s2_comment: ""
+    },
+    responsibility: {
+      s1: generateSkill(complete),
+      s2: generateSkill(complete),
+    },
+    risk_taking: {
+      s1: generateSkill(complete),
+      s2: generateSkill(complete),
+    },
+    science: {
+      s1: generateSubjectAchievementScore(complete),
+      s2: generateSubjectAchievementScore(complete),
+      s1_comment: "",
+      s2_comment: ""
+    },
+    social_studies: {
+      s1: generateSubjectAchievementScore(complete),
+      s2: generateSubjectAchievementScore(complete),
+      s1_comment: "",
+      s2_comment: ""
+    },
+    speaking: {
+      s1: generateSubjectAchievementScore(complete),
+      s2: generateSubjectAchievementScore(complete),
+      s1_comment: "",
+      s2_comment: ""
+    },
+    thinking: {
+      s1: generateSkill(complete),
+      s2: generateSkill(complete),
+    },
+    use_of_english: {
+      s1: generateSubjectAchievementScore(complete),
+      s2: generateSubjectAchievementScore(complete),
+      s1_comment: "",
+      s2_comment: ""
+    },
+    writing: {
+      s1: generateSubjectAchievementScore(complete),
+      s2: generateSubjectAchievementScore(complete),
+      s1_comment: "",
+      s2_comment: ""
+    },
+    comment: { 
+      s1: lorem.generateParagraphs(4), 
+      s2: lorem.generateParagraphs(4)
+    },
+  } as StudentField
+}
+function generateStudentFieldData(complete: boolean, studentIds: StudentId){
+  const fields = generateFields(complete)
+  return {
+    ...fields,
+    student_id: studentIds.sid,
+    field_id: studentIds.fid,
+  } as StudentField
 }
 
 function isUserCreatedEventData(data: EventData): data is UserCreatedEventData { // Type guard to check if evt.data is UserCreatedEventData
@@ -121,14 +248,24 @@ export async function POST(req: Request) {
         console.log("🚀 ~ POST ~ userId:", userId)
         
         await insertTeacher(userId);
-        // Insert complete demo class for the teacher
-        await insertClass(completeClassDemo, userId) 
-        // await updateStudentField()
+        // Insert complete demo class
+        const completeStudentIds: string = await insertClass(completeClassDemo, userId, true) 
+        const completeStudentIdsJson: StudentId[] = JSON.parse(completeStudentIds) as StudentId[]
+        const completeData = completeStudentIdsJson.map(student => {
+          return generateStudentFieldData(true, student)
+        })
+        await updateStudentField(completeData)
         
-        // Insert incomplete demo class for the teacher
-        await insertClass(incompleteClassDemo, userId) 
-        // await updateStudentField()
+        // Insert incomplete demo class
+        const incompleteStudentIds: string = await insertClass(incompleteClassDemo, userId, false) 
+        const incompleteStudentIdsJson: StudentId[] = JSON.parse(incompleteStudentIds) as StudentId[]
+        const incompleteData = incompleteStudentIdsJson.map(student => {
+          return generateStudentFieldData(false, student)
+        })
+        await updateStudentField(incompleteData)
 
+        revalidatePath("/classes")
+        return NextResponse.redirect(new URL('/classes', req.url))
       }
     } else {
       console.error('Unexpected event data format for user.created:', data);

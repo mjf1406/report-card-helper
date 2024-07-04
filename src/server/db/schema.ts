@@ -21,6 +21,7 @@ export const classes = sqliteTable('classes',
         class_language: text('class_language').notNull(),
         class_grade: text('class_grade', { enum: ["1","2","3","4","5"] }),
         class_year: text('class_year'),
+        complete: text('complete', { mode: 'json' }).$type<{ s1: boolean, s2: boolean }>(),
         created_date: text('created_date').default(sql`CURRENT_TIMESTAMP`).notNull(),
         updated_date: text('updated_date').default(sql`CURRENT_TIMESTAMP`).notNull(),
     }
