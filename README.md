@@ -14,6 +14,7 @@ This web app creates a frontend for the Younghoon Elementary School report card 
 
 ### p4
 
+- added: integrated AI so that the tone can be changed to be more positive on button click
 - added: next to each subject achievement, there will be 3 graphs: (1) a line graph that shows the current student's history at Younghoon, (2) a bar graph of the distribution of the current class, and (3) a bar graph of the distribution of the whole grade.
 - backend: upgrade errors for users to be more descriptive, like if they are unauthorized
   - `roster.tsx`
@@ -39,15 +40,25 @@ This web app creates a frontend for the Younghoon Elementary School report card 
 - added: admins can export all classes as separate PDFs or a single class when ready
 - added: ingested all the data in [the spreadsheet](https://docs.google.com/spreadsheets/d/1nY6fEE1_C9idh2KdKHgh9Dr7T-69v7kdvCFpG91WcyA/edit?usp=sharing) and inserted it into the db
   - this requires every single student have their own unique id, which it does in the the db, but not in the spreadsheet so there's no way to tell them apart
+- backend: uploaded PDFs for each grade to uploadthing and implemented them into `printPDF`
 
 ### p0
 
-- added: created a map to the PDF must skip the first 2 pages's
 - added: figured out why the social studies fields are not working
 - fixed: the classes page loads after the demo classes are added or the page is refreshed once the demo classes are added
 - backend: need to set a semester complete in classesTable when it happens
+- backend: move data transformations to the server
 
 ## Change Log
+
+2024/07/07
+
+- backend: need to save the subject achievement comments to the db
+-
+
+2024/07/05
+
+- added: created a map to the PDF
 
 2024/07/04
 

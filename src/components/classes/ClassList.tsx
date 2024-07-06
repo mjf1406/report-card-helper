@@ -5,7 +5,7 @@ import { Loader2, Download, SquarePen, School, Trash2 } from "lucide-react";
 import { Button } from "~/components/ui/button";
 // import EventBus from "~/lib/EventBus";
 import Link from "next/link";
-import { type TeacherCourse } from "~/server/db/types";
+import type { StudentField, TeacherCourse } from "~/server/db/types";
 import removeClassFromTeacher from "~/server/actions/removeClassFromTeacher";
 import { useToast } from "../ui/use-toast";
 import {
@@ -21,6 +21,17 @@ import {
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { downloadReportsBySemester } from "~/server/actions/downloadReportsBySemester";
+import { PDFDocument } from "pdf-lib";
+
+type Grade = "1" | "2" | "3" | "4" | "5" | "6";
+const GRADE_FORM_URLS: Record<Grade, string> = {
+  1: "",
+  2: "",
+  3: "",
+  4: "",
+  5: "https://utfs.io/f/5234b4e8-92e5-4934-bc32-2fe376e43760-1javl8.pdf",
+  6: "",
+};
 
 type Data = {
   classes: {
@@ -80,15 +91,222 @@ async function fetchClassroomData(): Promise<TeacherCourse[]> {
   }
 }
 
+export type PDF = {
+  student_name: string;
+  student_number: string;
+  student_fields: StudentField;
+  [key: string]: string | StudentField;
+};
+
+// https://pdf-lib.js.org/#fill-form
+export async function printPDF(
+  data: PDF[],
+  semester: string,
+  sex: string,
+  className: string,
+  classYear: string,
+  classGrade: Grade,
+) {
+  const studentLetters: string[] = [
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k",
+    "l",
+    "m",
+    "n",
+    "o",
+    "p",
+  ];
+  const prefixArray = [
+    // the below just use the student letter
+    // e.g. if it's student b, then it would be
+    // Student b
+    { name: "student_name", prefix: "Student " },
+    { name: "student_number", prefix: "number " },
+    // --- 21st Century Skills, Learner Traits, and Work Habits ---
+    // the below use the letter once and the semester number
+    // e.g. if the semester is 1 for student b, then it would be
+    // Res1b
+    { name: "responsibility", prefix: "Res" },
+    { name: "organization", prefix: "Or" },
+    { name: "collaboration", prefix: "co" },
+    { name: "communication", prefix: "Com" },
+    { name: "thinking", prefix: "thin" },
+    { name: "inquiry", prefix: "inqu" },
+    { name: "risk_taking", prefix: "ref" },
+    { name: "open_minded", prefix: "rt" },
+    // --- Skill and Habits Comment ---
+    // the below uses the semester number then the letter once
+    // e.g. if the semester is 1 and the letter is b
+    // Skills/Habits 1b
+    { name: "comment", prefix: "Skills/Habits " },
+    // --- Subject Achievement Scores ---
+    // the below uses the semester number then the letter twice
+    // e.g. if the letter is b, then it would be
+    // R1bb (name + semester + letter + letter)
+    { name: "reading_score", prefix: "R" },
+    { name: "writing_score", prefix: "W" },
+    { name: "speaking_score", prefix: "Sp" },
+    { name: "listening_score", prefix: "L" },
+    { name: "use_of_english_score", prefix: "UE" },
+    { name: "mathematics_score", prefix: "M" },
+    { name: "social_studies_score", prefix: "SS" },
+    { name: "science_score", prefix: "SC" },
+    // --- Subject Achievement Comments ---
+    // the below use the letter twice
+    // e.g. if the letter is b, then it would be
+    // Reading Textbb
+    // These are the fields for the Strengths/Next Steps for Improvements, i.e. the subject comments
+    { name: "reading", prefix: "Reading Text" },
+    { name: "writing", prefix: "Writing Text" },
+    { name: "speaking", prefix: "Speaking Text" },
+    { name: "listening", prefix: "Listening Text" },
+    { name: "use_of_english", prefix: "Use of English Text" },
+    { name: "mathematics", prefix: "math Text" },
+    { name: "social_studies", prefix: "S Text" },
+    { name: "science", prefix: "SciText" },
+  ];
+  const semesterAsNumberString = semester.replace("s", "");
+  const formUrl = GRADE_FORM_URLS[classGrade];
+  const formPdfBytes = await fetch(formUrl).then((res) => res.arrayBuffer());
+  const pdfDoc = await PDFDocument.load(formPdfBytes);
+  const form = pdfDoc.getForm();
+
+  const codeField = form.getTextField("Code");
+  codeField.setFontSize(8);
+
+  for (let index = 0; index < data.length; index++) {
+    const element = data[index];
+    const studentFields = element?.student_fields;
+    const studentLetter = studentLetters[index];
+    for (const prefixData of prefixArray) {
+      const name = prefixData?.name;
+      const prefix = prefixData?.prefix;
+
+      if (prefix === "S Text") continue;
+
+      let fieldName = `${prefix}${semesterAsNumberString}${studentLetter}`; // Defaults to 21st Century Skills, Learner Traits, and Work Habits
+      if (prefix.includes("Text"))
+        fieldName = `${prefix}${studentLetter}${studentLetter}`; // For Subject Achievement Comments
+      if (name.includes("_score"))
+        fieldName = `${prefix}${semesterAsNumberString}${studentLetter}${studentLetter}`; // For Subject Achievement Comments
+      if (prefix === "Student " || prefix === "number ")
+        fieldName = `${prefix}${studentLetter}`; // For Student Name and Student Number
+      const field = form.getTextField(fieldName);
+
+      let textData = studentFields?.[name as keyof StudentField];
+      if (prefix === "Student " || prefix === "number ")
+        textData = element?.[name as keyof PDF] as string | undefined;
+      if (name.includes("_score")) {
+        textData = studentFields?.[
+          name.replace("_score", "") as keyof StudentField
+        ] as string;
+      }
+      let text;
+
+      if (typeof textData === "string" || textData instanceof String) {
+        text = textData as string;
+      } else if (
+        textData &&
+        typeof textData === "object" &&
+        semester in textData
+      ) {
+        if (name.includes("_score"))
+          text = textData[semester as keyof typeof textData] as
+            | string
+            | undefined;
+        else if (prefix.includes("Text"))
+          text = textData[`${semester}_comment` as keyof typeof textData] as
+            | string
+            | undefined;
+        else
+          text = textData[semester as keyof typeof textData] as
+            | string
+            | undefined;
+      } else {
+        text = "";
+      }
+
+      if (text !== undefined) {
+        field.setText(text);
+      }
+    }
+  }
+
+  // form.flatten();
+  const pdfBytes = await pdfDoc.save();
+
+  const blob = new Blob([pdfBytes], { type: "application/pdf" });
+  const link = document.createElement("a");
+  link.href = window.URL.createObjectURL(blob);
+  link.download = `(${classYear}) ${className}-${semester}-${sex}.pdf`;
+  link.click();
+  window.URL.revokeObjectURL(link.href);
+}
+
 export default function ClassList() {
   const [courses, setCourses] = useState<TeacherCourse[]>([]);
-  console.log("🚀 ~ ClassList ~ courses:", courses);
   const [isLoading, setIsLoading] = useState(true);
+  const [pdfLoadingS1, setPdfLoadingS1] = useState(false);
+  const [pdfLoadingS2, setPdfLoadingS2] = useState(false);
   const [courseToDelete, setCourseToDelete] = useState<string | null>(null);
   const [deleteCourseText, setDeleteCourseText] = useState("");
   const [loadingButtonId, setLoadingButtonId] = useState<string | null>(null);
   const { toast } = useToast();
 
+  async function buildPdfReportBySemester(
+    classId: string,
+    semester: string,
+    className: string,
+    classYear: string,
+    classGrade: Grade,
+  ) {
+    if (semester === "s1") setPdfLoadingS1(true);
+    if (semester === "s2") setPdfLoadingS2(true);
+    toast({
+      title: "Pulling data from the server...",
+      description: "We thank you for your patience.",
+    });
+    const data = await downloadReportsBySemester(classId, semester);
+    toast({
+      title: "Building the boy PDF...",
+      description: "We thank you for your patience.",
+    });
+    await printPDF(
+      data.males,
+      semester,
+      "boys",
+      className,
+      classYear,
+      classGrade,
+    );
+    toast({
+      title: "Building the girl PDF...",
+      description: "We thank you for your patience.",
+    });
+    await printPDF(
+      data.females,
+      semester,
+      "girls",
+      className,
+      classYear,
+      classGrade,
+    );
+    if (semester === "s1") setPdfLoadingS1(false);
+    if (semester === "s2") setPdfLoadingS2(false);
+    toast({
+      title: "All done!",
+      description: "Thank you for your patience! :D",
+      duration: 2000,
+    });
+  }
   async function handleDeleteClass(classId: string, className: string) {
     if (className !== deleteCourseText) {
       return toast({
@@ -177,22 +395,54 @@ export default function ClassList() {
                     <Button
                       variant="secondary"
                       onClick={() =>
-                        downloadReportsBySemester(course.class_id, "s1")
+                        buildPdfReportBySemester(
+                          course.class_id,
+                          "s1",
+                          course.class_name,
+                          course.class_year,
+                          course.class_grade as Grade,
+                        )
                       }
+                      disabled={pdfLoadingS1}
                     >
-                      <Download className="mr-2 h-4 w-4" />
-                      S1
+                      {pdfLoadingS1 ? (
+                        <>
+                          <Loader2 className="mr-2 h-6 w-6 animate-spin" />
+                          S1
+                        </>
+                      ) : (
+                        <>
+                          <Download className="mr-2 h-4 w-4" />
+                          S1
+                        </>
+                      )}
                     </Button>
                   )}
                   {course.complete.s2 && (
                     <Button
                       variant="secondary"
                       onClick={() =>
-                        downloadReportsBySemester(course.class_id, "s2")
+                        buildPdfReportBySemester(
+                          course.class_id,
+                          "s2",
+                          course.class_name,
+                          course.class_year,
+                          course.class_grade as Grade,
+                        )
                       }
+                      disabled={pdfLoadingS2}
                     >
-                      <Download className="mr-2 h-4 w-4" />
-                      S2
+                      {pdfLoadingS2 ? (
+                        <>
+                          <Loader2 className="mr-2 h-6 w-6 animate-spin" />
+                          S2
+                        </>
+                      ) : (
+                        <>
+                          <Download className="mr-2 h-4 w-4" />
+                          S2
+                        </>
+                      )}
                     </Button>
                   )}
                 </>

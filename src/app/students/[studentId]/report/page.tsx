@@ -20,7 +20,18 @@ interface Params {
 }
 const skillToFieldKeyMap: Record<
   string,
-  keyof Omit<StudentField, "field_id" | "student_id">
+  keyof Pick<
+    StudentField,
+    | "collaboration"
+    | "communication"
+    | "inquiry"
+    | "open_minded"
+    | "organization"
+    | "responsibility"
+    | "risk_taking"
+    | "thinking"
+    | "comment"
+  >
 > = {
   Responsibility: "responsibility",
   Organization: "organization",
@@ -31,6 +42,21 @@ const skillToFieldKeyMap: Record<
   "Risk-taking": "risk_taking",
   "Open-minded": "open_minded",
   Comment: "comment",
+};
+const subjectToFieldKeyMap: Record<
+  string,
+  keyof Pick<
+    StudentField,
+    | "listening"
+    | "mathematics"
+    | "reading"
+    | "science"
+    | "speaking"
+    | "social_studies"
+    | "use_of_english"
+    | "writing"
+  >
+> = {
   Reading: "reading",
   Writing: "writing",
   Speaking: "speaking",
@@ -249,10 +275,39 @@ export default function StudentReport({
       });
   }, [userId, classGrade, classYear, toast]);
 
-  // const studentFields = JSON.parse(newFields) as StudentField; // TODO: comment out when building
+  useEffect(() => {
+    if (!studentFields) return;
+    updateStudentField(studentFields)
+      .then(() => {
+        toast({
+          title: "Data saved!",
+          description: `All the student fields were updated successfully!`,
+          duration: 2000,
+        });
+      })
+      .catch((err) => {
+        console.error(err);
+        toast({
+          variant: "destructive",
+          title: "Error updating the database!",
+          description: `The student fields did not update! Please refresh the page, then try again.`,
+        });
+      });
+  }, [studentFields, toast]);
 
-  const handleValueChange = (
-    skill: keyof Omit<StudentField, "field_id" | "student_id">,
+  const handleSkillChange = (
+    skill: keyof Pick<
+      StudentField,
+      | "collaboration"
+      | "communication"
+      | "inquiry"
+      | "open_minded"
+      | "organization"
+      | "responsibility"
+      | "risk_taking"
+      | "thinking"
+      | "comment"
+    >,
     semester: "s1" | "s2",
     value: string,
   ) => {
@@ -271,24 +326,44 @@ export default function StudentReport({
           [semester]: value,
         },
       };
+      return updatedFields;
+    });
+  };
 
-      // Call updateStudentField here, inside the setState callback
-      updateStudentField(updatedFields)
-        .then(() => {
-          toast({
-            title: "Data saved!",
-            description: `${semester.toUpperCase()} of ${skill} was updated successfully!`,
-          });
-        })
-        .catch((err) => {
-          console.error(err);
-          toast({
-            variant: "destructive",
-            title: "Error updating the database!",
-            description: `${semester.toUpperCase()} of ${skill} did not update! Please select another value, then the same one again.`,
-          });
-        });
+  const handleSubjectChange = (
+    subject: keyof Pick<
+      StudentField,
+      | "listening"
+      | "mathematics"
+      | "reading"
+      | "science"
+      | "speaking"
+      | "social_studies"
+      | "use_of_english"
+      | "writing"
+    >,
+    semester: "s1" | "s2",
+    value: string,
+    comment: string | undefined,
+  ) => {
+    setFields((prevFields: StudentField | undefined) => {
+      if (!prevFields) {
+        console.error("prevFields is undefined");
+        return prevFields; // or return a new StudentField object with default values
+      }
 
+      const otherSemester = semester === "s1" ? "s2" : "s1";
+      const updatedFields = {
+        ...prevFields,
+        [subject]: {
+          ...prevFields[subject],
+          [otherSemester]: prevFields[subject]?.[otherSemester] || "",
+          [semester]: value,
+          [`${otherSemester}_comment`]:
+            prevFields[subject]?.[`${otherSemester}_comment`] || "",
+          [`${semester}_comment`]: comment,
+        },
+      };
       return updatedFields;
     });
   };
@@ -359,7 +434,7 @@ export default function StudentReport({
                         }
                         onValueChange={(semester, value) => {
                           if (fieldKey) {
-                            handleValueChange(fieldKey, semester, value);
+                            handleSkillChange(fieldKey, semester, value);
                           } else {
                             console.error(
                               `fieldKey is undefined for skill: ${skill}`,
@@ -414,7 +489,7 @@ export default function StudentReport({
                     placeholder="Skill and Habits comment. I recommend you write this in Google Docs, then copy it over."
                     defaultValue={studentFields?.comment?.s1}
                     onBlur={(event) =>
-                      handleValueChange("comment", "s1", event.target.value)
+                      handleSkillChange("comment", "s1", event.target.value)
                     }
                   />
                   <div className="text-xl">
@@ -429,7 +504,7 @@ export default function StudentReport({
                     placeholder="Skill and Habits comment. I recommend you write this in Google Docs, then copy it over."
                     defaultValue={studentFields?.comment?.s2}
                     onBlur={(event) =>
-                      handleValueChange("comment", "s2", event.target.value)
+                      handleSkillChange("comment", "s2", event.target.value)
                     }
                   />
                 </div>
@@ -477,7 +552,7 @@ export default function StudentReport({
                     "Social Studies",
                     "Science",
                   ].map((subject) => {
-                    const fieldKey = skillToFieldKeyMap[subject];
+                    const fieldKey = subjectToFieldKeyMap[subject];
                     if (!fieldKey) {
                       console.error(
                         `fieldKey is undefined for subject: ${subject}`,
@@ -491,13 +566,13 @@ export default function StudentReport({
                     const s1value = values?.s1;
                     const s2value = values?.s2;
 
-                    const s1Comment = filterSubjectCommentBySubjectAndSemester(
+                    let s1Comment = filterSubjectCommentBySubjectAndSemester(
                       comments,
                       fieldKey,
                       "1",
                       s1value,
                     );
-                    const s2Comment = filterSubjectCommentBySubjectAndSemester(
+                    let s2Comment = filterSubjectCommentBySubjectAndSemester(
                       comments,
                       fieldKey,
                       "2",
@@ -516,9 +591,33 @@ export default function StudentReport({
                             selected={
                               studentFields?.[fieldKey] ?? { s1: "", s2: "" }
                             }
-                            onValueChange={(semester, value) =>
-                              handleValueChange(fieldKey, semester, value)
-                            }
+                            onValueChange={(semester, value) => {
+                              if (semester === "s1") {
+                                s1Comment =
+                                  filterSubjectCommentBySubjectAndSemester(
+                                    comments,
+                                    fieldKey,
+                                    "1",
+                                    value,
+                                  );
+                              } else {
+                                s2Comment =
+                                  filterSubjectCommentBySubjectAndSemester(
+                                    comments,
+                                    fieldKey,
+                                    "2",
+                                    value,
+                                  );
+                              }
+                              const com: string | undefined =
+                                semester === "s1" ? s1Comment : s2Comment;
+                              handleSubjectChange(
+                                fieldKey,
+                                semester,
+                                value,
+                                com,
+                              );
+                            }}
                           />
                         </div>
                         <div className="flex grow flex-row items-center gap-2">
@@ -526,7 +625,7 @@ export default function StudentReport({
                           <Textarea
                             className="text-3xs m-auto h-fit w-full"
                             placeholder="Select an option in the dropdown to load the comment..."
-                            defaultValue={s1Comment}
+                            value={s1Comment}
                             disabled={true}
                             // onChange={(event) =>
                             //   handleValueChange(
@@ -541,7 +640,7 @@ export default function StudentReport({
                           <Textarea
                             className="text-3xs m-auto h-fit w-full"
                             placeholder="Select an option in the dropdown to load the comment..."
-                            defaultValue={s2Comment}
+                            value={s2Comment}
                             disabled={true}
                             // onChange={(event) =>
                             //   handleValueChange(
