@@ -6,7 +6,6 @@ import { useAuth } from "@clerk/nextjs";
 import { Loader2, SquarePen, Newspaper, Trash2 } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import Link from "next/link";
-import { databaseClassToCourseMap } from "~/server/actions/getClassById";
 import type { Student, Course, StudentField } from "~/server/db/types";
 import {
   Dialog,
@@ -28,12 +27,6 @@ type Params = {
   classId: string;
 };
 
-type data = {
-  class: [];
-  studentFields: [];
-  students: [];
-};
-
 async function fetchStudentRoster(
   classId: string,
   userId: string | null | undefined,
@@ -49,9 +42,8 @@ async function fetchStudentRoster(
     }
     const text: string = await response.text();
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const data: data = JSON.parse(text);
-    const classData: Course | undefined = await databaseClassToCourseMap(data);
-    return classData;
+    const data: Course | undefined = JSON.parse(text);
+    return data;
   } catch (err) {
     const error = err as Error;
     console.error("failed to parse course", error);
@@ -75,7 +67,6 @@ function countFilledFieldsByStudent(
     return count;
   }, 0);
 }
-
 function countFilledFieldsByClass(
   students: Student[],
   semester: string,

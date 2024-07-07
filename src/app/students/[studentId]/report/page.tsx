@@ -10,6 +10,7 @@ import type { StudentField, Student, CommentsDb } from "~/server/db/types";
 import { useToast } from "~/components/ui/use-toast";
 import { Loader2 } from "lucide-react";
 import { useAuth } from "@clerk/nextjs";
+import countCompletedFieldsAndSetComplete from "~/server/actions/countCompletedFieldsAndSetComplete";
 
 interface Params {
   student_id: string;
@@ -293,7 +294,23 @@ export default function StudentReport({
           description: `The student fields did not update! Please refresh the page, then try again.`,
         });
       });
-  }, [studentFields, toast]);
+    countCompletedFieldsAndSetComplete(classId)
+      .then(() => {
+        toast({
+          title: "Data saved!",
+          description: `All the student fields were updated successfully!`,
+          duration: 2000,
+        });
+      })
+      .catch((err) => {
+        console.error(err);
+        toast({
+          variant: "destructive",
+          title: "Error updating the database!",
+          description: `The student fields did not update! Please refresh the page, then try again.`,
+        });
+      });
+  }, [studentFields, classId, toast]);
 
   const handleSkillChange = (
     skill: keyof Pick<

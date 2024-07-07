@@ -44,17 +44,20 @@ This web app creates a frontend for the Younghoon Elementary School report card 
 
 ### p0
 
-- added: figured out why the social studies fields are not working
-- fixed: the classes page loads after the demo classes are added or the page is refreshed once the demo classes are added
-- backend: need to set a semester complete in classesTable when it happens
-- backend: move data transformations to the server
+- backend: moved pdf generation to the server
 
 ## Change Log
 
 2024/07/07
 
-- backend: need to save the subject achievement comments to the db
--
+- backend: move data transformations to the server
+- backend: need to set a semester complete in classesTable when it happens
+- fixed: social studies subject achievement comments are now working
+- backend: subject achievement comments are now properly saved to the db
+- backend: added subject achievement comments to the demo classes
+- pdf: subject achievement comments font size is now set
+- pdf: skills/habit comment font size is now set
+- added: there is now a "add demo classes" button on /classes
 
 2024/07/05
 

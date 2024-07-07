@@ -22,57 +22,7 @@ import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { downloadReportsBySemester } from "~/server/actions/downloadReportsBySemester";
 import { PDFDocument } from "pdf-lib";
-
-type Grade = "1" | "2" | "3" | "4" | "5" | "6";
-const GRADE_FORM_URLS: Record<Grade, string> = {
-  1: "",
-  2: "",
-  3: "",
-  4: "",
-  5: "https://utfs.io/f/5234b4e8-92e5-4934-bc32-2fe376e43760-1javl8.pdf",
-  6: "",
-};
-
-type Data = {
-  classes: {
-    class_id: string;
-    class_name: string;
-    class_language: string;
-    class_grade: string;
-    class_year: string;
-    created_date: string;
-    updated_date: string;
-    complete: {
-      s1: boolean;
-      s2: boolean;
-    };
-  };
-  teacher_classes: {
-    assigned_date: string;
-    role: string;
-  };
-};
-
-export async function databaseClassesToCourseMap(
-  data: Data[],
-): Promise<TeacherCourse[]> {
-  const classes: TeacherCourse[] = [];
-  for (const element of data) {
-    classes.push({
-      class_id: element.classes.class_id,
-      class_name: element.classes.class_name,
-      class_language: element.classes.class_language,
-      class_grade: element.classes.class_grade,
-      class_year: element.classes.class_year,
-      created_date: element.classes.created_date,
-      updated_date: element.classes.updated_date,
-      assigned_date: element.teacher_classes.assigned_date,
-      role: element.teacher_classes.role,
-      complete: element.classes.complete,
-    });
-  }
-  return classes;
-}
+import { GRADE_FORM_URLS, type Grade } from "~/lib/constants";
 
 async function fetchClassroomData(): Promise<TeacherCourse[]> {
   try {
@@ -81,9 +31,8 @@ async function fetchClassroomData(): Promise<TeacherCourse[]> {
       throw new Error("Failed to fetch classes data");
     }
     const text: string = await response.text(); // Make this operation await so it completes here
-    const data: Data[] = JSON.parse(text) as Data[];
-    const classes: TeacherCourse[] = await databaseClassesToCourseMap(data);
-    return classes;
+    const data: TeacherCourse[] = JSON.parse(text) as TeacherCourse[];
+    return data;
   } catch (err) {
     const error = err as Error;
     console.error("failed to parse course", error);
@@ -125,6 +74,7 @@ export async function printPDF(
     "p",
   ];
   const prefixArray = [
+    // Reading OJ
     // the below just use the student letter
     // e.g. if it's student b, then it would be
     // Student b
@@ -170,14 +120,52 @@ export async function printPDF(
     { name: "listening", prefix: "Listening Text" },
     { name: "use_of_english", prefix: "Use of English Text" },
     { name: "mathematics", prefix: "math Text" },
-    { name: "social_studies", prefix: "S Text" },
+    { name: "social_studies", prefix: "S.S Text" },
     { name: "science", prefix: "SciText" },
+    // --- Subject Achievement Descriptions
+    // The descriptions of each subject follows the subject + OJ
+    // e.g. if the subject is reading, then it would be
+    { name: "reading_OJ", prefix: "Reading " },
+    { name: "writing_OJ", prefix: "Writing " },
+    { name: "speaking_OJ", prefix: "Speaking " },
+    { name: "listening_OJ", prefix: "listening " },
+    { name: "use_of_english_OJ", prefix: "use of Eng" },
+    { name: "mathematics_OJ", prefix: "math " },
+    { name: "social_studies_OJ", prefix: "SS " },
+    { name: "science_OJ", prefix: "Sci " },
   ];
-  const semesterAsNumberString = semester.replace("s", "");
+  let semesterAsNumberString = semester.replace("s", "");
   const formUrl = GRADE_FORM_URLS[classGrade];
   const formPdfBytes = await fetch(formUrl).then((res) => res.arrayBuffer());
   const pdfDoc = await PDFDocument.load(formPdfBytes);
   const form = pdfDoc.getForm();
+  // const fields = form.getFields();
+  // const formFields = fields.map((field) => {
+  //   return {
+  //     name: field.getName(),
+  //     type: field.constructor.name, // or you can use field.getType() if available
+  //     // value: field.getValue(), // you can also add any other properties you need
+  //   };
+  // });
+  // function getCircularReplacer() {
+  //   const seen = new WeakSet();
+  //   return (key, value) => {
+  //     if (typeof value === "object" && value !== null) {
+  //       if (seen.has(value)) {
+  //         return;
+  //       }
+  //       seen.add(value);
+  //     }
+  //     return value;
+  //   };
+  // }
+  // const formFieldsJson = JSON.stringify(formFields, null, 2);
+  // const bloba = new Blob([formFieldsJson], { type: "application/json" });
+  // const linka = document.createElement("a");
+  // linka.href = window.URL.createObjectURL(bloba);
+  // linka.download = `formFields.json`;
+  // linka.click();
+  // window.URL.revokeObjectURL(linka.href);
 
   const codeField = form.getTextField("Code");
   codeField.setFontSize(8);
@@ -190,7 +178,19 @@ export async function printPDF(
       const name = prefixData?.name;
       const prefix = prefixData?.prefix;
 
-      if (prefix === "S Text") continue;
+      if (name === "comment") {
+        semesterAsNumberString = "1";
+        const field = form.getTextField(
+          `${prefix}${semesterAsNumberString}${studentLetter}`,
+        );
+        field.setFontSize(6);
+      } else semesterAsNumberString = semester.replace("s", "");
+      if (name.includes("_OJ")) {
+        const field = form.getTextField(`${prefix}OJ`);
+        field.setFontSize(6);
+        continue;
+      }
+      // if (prefix === "S Text") continue;
 
       let fieldName = `${prefix}${semesterAsNumberString}${studentLetter}`; // Defaults to 21st Century Skills, Learner Traits, and Work Habits
       if (prefix.includes("Text"))
@@ -254,6 +254,7 @@ export async function printPDF(
 export default function ClassList() {
   const [courses, setCourses] = useState<TeacherCourse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingNewUser, setIsLoadingNewUser] = useState(false);
   const [pdfLoadingS1, setPdfLoadingS1] = useState(false);
   const [pdfLoadingS2, setPdfLoadingS2] = useState(false);
   const [courseToDelete, setCourseToDelete] = useState<string | null>(null);
@@ -307,6 +308,72 @@ export default function ClassList() {
       duration: 2000,
     });
   }
+  // async function buildPdfReportBySemester(
+  //   classId: string,
+  //   semester: string,
+  //   className: string,
+  //   classYear: string,
+  //   classGrade: Grade,
+  // ) {
+  //   if (semester === "s1") setPdfLoadingS1(true);
+  //   if (semester === "s2") setPdfLoadingS2(true);
+
+  //   try {
+  //     toast({
+  //       title: "Generating PDF...",
+  //       description: "Please wait while we generate your PDF.",
+  //     });
+
+  //     const generatePDF = async (sex: "males" | "females") => {
+  //       const response = await fetch("/api/generatePDF", {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         body: JSON.stringify({
+  //           classId,
+  //           semester,
+  //           className,
+  //           classYear,
+  //           classGrade,
+  //           sex,
+  //         }),
+  //       });
+
+  //       if (!response.ok) {
+  //         throw new Error(`Failed to generate PDF for ${sex}`);
+  //       }
+
+  //       const blob = await response.blob();
+  //       const url = window.URL.createObjectURL(blob);
+  //       const a = document.createElement("a");
+  //       a.href = url;
+  //       a.download = `${className}-${semester}-${sex === "males" ? "boys" : "girls"}.pdf`;
+  //       document.body.appendChild(a);
+  //       a.click();
+  //       window.URL.revokeObjectURL(url);
+  //     };
+
+  //     await generatePDF("males");
+  //     await generatePDF("females");
+
+  //     toast({
+  //       title: "PDFs generated successfully!",
+  //       description: "Your PDFs have been downloaded.",
+  //     });
+  //   } catch (error) {
+  //     console.error("Error generating PDF:", error);
+  //     toast({
+  //       title: "Error generating PDFs",
+  //       description:
+  //         "An error occurred while generating the PDFs. Please try again.",
+  //       variant: "destructive",
+  //     });
+  //   } finally {
+  //     if (semester === "s1") setPdfLoadingS1(false);
+  //     if (semester === "s2") setPdfLoadingS2(false);
+  //   }
+  // }
   async function handleDeleteClass(classId: string, className: string) {
     if (className !== deleteCourseText) {
       return toast({

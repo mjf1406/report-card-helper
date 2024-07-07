@@ -11,40 +11,7 @@ import { sql, eq } from "drizzle-orm";
 import { type Course, type Teacher, type Student, type StudentField } from "../db/types";
 import { isTeacherInClass } from "./isTeacherInClass";
 
-const getClassById = async (classId: string, userId: string | undefined) => {
-    if (!userId) throw new Error("User not authenticated")
-
-    const isTeacherInClassBool: boolean = await isTeacherInClass(userId, classId)
-    if (!isTeacherInClassBool) throw new Error("Unauthorized! You are not a teacher in this class.")
-        
-    try {
-        const classData = await db
-            .select()
-            .from(classesTable)
-            .innerJoin(teacherClassesTable, eq(classesTable.class_id, teacherClassesTable.class_id))
-            .innerJoin(usersTable, eq(teacherClassesTable.user_id, usersTable.user_id))
-            .where(eq(teacherClassesTable.class_id, classId))
-        const students = await db
-            .select()
-            .from(studentTable)
-            .innerJoin(studentClassesTable, eq(studentTable.student_id, studentClassesTable.student_id))
-            .where(sql`${studentClassesTable.class_id} = ${classId}`)
-            .orderBy(studentTable.student_number)
-        const studentFields = await db
-            .select()
-            .from(studentFieldTable)
-            .innerJoin(studentClassesTable, eq(studentFieldTable.student_id, studentClassesTable.student_id))
-            .where(sql`${studentClassesTable.class_id} = ${classId}`)
-
-        return { class: classData, students: students, studentFields: studentFields }
-    } catch (error) {
-        console.error('Error fetching class:', error);
-        throw new Error('Failed to fetch class.');
-    }
-}
-
-async function databaseClassToCourseMap(
-    data: {
+export type DataButt = {
     class: {
         teacher_classes: {
             assigned_date: string | undefined,
@@ -146,7 +113,48 @@ async function databaseClassToCourseMap(
             comment: { s1: string, s2: string };
         }
     }[]
-}): Promise<Course | undefined> {
+}
+
+type data = {
+    class: [];
+    studentFields: [];
+    students: [];
+};
+  
+const getClassById = async (classId: string, userId: string | undefined) => {
+    if (!userId) throw new Error("User not authenticated")
+
+    const isTeacherInClassBool: boolean = await isTeacherInClass(userId, classId)
+    if (!isTeacherInClassBool) throw new Error("Unauthorized! You are not a teacher in this class.")
+        
+    try {
+        const classData = await db
+            .select()
+            .from(classesTable)
+            .innerJoin(teacherClassesTable, eq(classesTable.class_id, teacherClassesTable.class_id))
+            .innerJoin(usersTable, eq(teacherClassesTable.user_id, usersTable.user_id))
+            .where(eq(teacherClassesTable.class_id, classId))
+        const students = await db
+            .select()
+            .from(studentTable)
+            .innerJoin(studentClassesTable, eq(studentTable.student_id, studentClassesTable.student_id))
+            .where(sql`${studentClassesTable.class_id} = ${classId}`)
+            .orderBy(studentTable.student_number)
+        const studentFields = await db
+            .select()
+            .from(studentFieldTable)
+            .innerJoin(studentClassesTable, eq(studentFieldTable.student_id, studentClassesTable.student_id))
+            .where(sql`${studentClassesTable.class_id} = ${classId}`)
+
+        const data: DataButt = { class: classData, students: students, studentFields: studentFields } as data
+        return await databaseClassToCourseMap(data)
+    } catch (error) {
+        console.error('Error fetching class:', error);
+        throw new Error('Failed to fetch class.');
+    }
+}
+
+async function databaseClassToCourseMap(data: DataButt): Promise<Course | undefined> {
     if (!data) return undefined
     const teachers: Teacher[] = [];
 
