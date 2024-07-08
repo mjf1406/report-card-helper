@@ -42,6 +42,13 @@ This web app creates a frontend for the Younghoon Elementary School report card 
   - this requires every single student have their own unique id, which it does in the the db, but not in the spreadsheet so there's no way to tell them apart
   - current 6th graders (gr.6 2024-25) were in 2nd grade in 2020 (gr.2 2020-21) when they started tracking everything
 - backend: uploaded PDFs for each grade to uploadthing and implemented them into `printPDF`
+
+### p0
+
+- backend: moved pdf generation to the server
+- UX: alert the user if there are no comments in the db
+- UI: somehow show that a student has all fields complete in their card on the `/classes/[classId]` page
+- UI: redesigned `/report`
 - added: a word counter to the skills/habits comments text fields
 - UX: user is no longer alerted that data was saved, but only alerted when the data failed to save
 - PDF: made the subject achievement comments font smaller
@@ -51,13 +58,6 @@ This web app creates a frontend for the Younghoon Elementary School report card 
 - PDF: student numbers are now formatted correctly
 - PDF: teacher's name is added to correctly
 - PDF: extra line breaks are now trimmed in subject achievement comments
-
-### p0
-
-- backend: moved pdf generation to the server
-- UX: alert the user if there are no comments in the db
-- UI: somehow show that a student has all fields complete in their card on the `/classes/[classId]` page
-- UI: redesigned `/report`
 
 ## Change Log
 
