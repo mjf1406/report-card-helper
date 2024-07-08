@@ -78,15 +78,15 @@ const SkillsSelectGroup: FC<{
             onValueChange={(value) => onValueChange("s2", value)}
           />
         </div>
-      </div>
-      <div className="m-auto flex w-full max-w-md flex-col items-start text-left text-xs">
-        {!descriptions ? (
-          <></>
-        ) : (
-          descriptions.map((item: string, index: number) => (
-            <div key={index}>• {item}</div>
-          ))
-        )}
+        <div className="m-auto flex w-full max-w-md flex-col items-start text-left text-xs">
+          {!descriptions ? (
+            <></>
+          ) : (
+            descriptions.map((item: string, index: number) => (
+              <div key={index}>• {item}</div>
+            ))
+          )}
+        </div>
       </div>
     </>
   );

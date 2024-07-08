@@ -40,11 +40,15 @@ This web app creates a frontend for the Younghoon Elementary School report card 
 - added: admins can export all classes as separate PDFs or a single class when ready
 - added: ingested all the data in [the spreadsheet](https://docs.google.com/spreadsheets/d/1nY6fEE1_C9idh2KdKHgh9Dr7T-69v7kdvCFpG91WcyA/edit?usp=sharing) and inserted it into the db
   - this requires every single student have their own unique id, which it does in the the db, but not in the spreadsheet so there's no way to tell them apart
+  - current 6th graders (gr.6 2024-25) were in 2nd grade in 2020 (gr.2 2020-21) when they started tracking everything
 - backend: uploaded PDFs for each grade to uploadthing and implemented them into `printPDF`
 
 ### p0
 
 - backend: moved pdf generation to the server
+- UX: alert the user if there are no comments in the db
+- UI: somehow show that a student has all fields complete in their card on the `/classes/[classId]` page
+- UI: redesigned `/report`
 
 ## Change Log
 
