@@ -279,13 +279,7 @@ export default function StudentReport({
   useEffect(() => {
     if (!studentFields) return;
     updateStudentField(studentFields)
-      .then(() => {
-        toast({
-          title: "Data saved!",
-          description: `All the student fields were updated successfully!`,
-          duration: 2000,
-        });
-      })
+      .then()
       .catch((err) => {
         console.error(err);
         toast({
@@ -295,13 +289,7 @@ export default function StudentReport({
         });
       });
     countCompletedFieldsAndSetComplete(classId)
-      .then(() => {
-        toast({
-          title: "Data saved!",
-          description: `All the student fields were updated successfully!`,
-          duration: 2000,
-        });
-      })
+      .then()
       .catch((err) => {
         console.error(err);
         toast({

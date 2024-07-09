@@ -23,6 +23,7 @@ This web app creates a frontend for the Younghoon Elementary School report card 
 ### p3
 
 - added: Google refresh token is now handled, prompting the user to reauthorize
+- backend: moved pdf generation to the server
 
 ### p2
 
@@ -45,12 +46,10 @@ This web app creates a frontend for the Younghoon Elementary School report card 
 
 ### p0
 
-- backend: moved pdf generation to the server
 - UX: alert the user if there are no comments in the db
 - UI: somehow show that a student has all fields complete in their card on the `/classes/[classId]` page
 - UI: redesigned `/report`
 - added: a word counter to the skills/habits comments text fields
-- UX: user is no longer alerted that data was saved, but only alerted when the data failed to save
 - PDF: made the subject achievement comments font smaller
 - PDF: made the subject achievement scores font smaller
 - PDF: made the skills scores font smaller
@@ -60,6 +59,11 @@ This web app creates a frontend for the Younghoon Elementary School report card 
 - PDF: extra line breaks are now trimmed in subject achievement comments
 
 ## Change Log
+
+2024/07/09
+
+- backend: clerk webhook now returns 307 in production
+- UX: user is no longer alerted that data was saved, but only alerted when the data failed to save
 
 2024/07/07
 
